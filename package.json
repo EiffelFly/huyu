@@ -1,0 +1,9 @@
+{
+  "name": "huyu",
+  "version": "0.0.1",
+  "description": "Huyu is a mininal version of react",
+  "repository": "https://github.com/EiffelFly/huyu.git",
+  "author": "Summerbud",
+  "license": "MIT",
+  "private": false
+}
