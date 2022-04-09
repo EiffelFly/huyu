@@ -1,71 +1,48 @@
-export type Key = string | number;
+export type Key = string | number | any;
 
-export type MutableRefObject<T> = {
-  current: T;
-};
+export type RefObject<T> = { current: T | null };
+export type RefCallback<T> = (instance: T | null) => void;
 
-// Question: Why we need this?
+// When to use this definition?
 // export type RefCallback<T> = {
 //   bivarianceHack(instance: T | null): void
 // }['bivarianceHack']
 
-export type Ref<T = any> = MutableRefObject<T> | null;
+export type Ref<T> = RefObject<T> | RefCallback<T>;
 
-export interface Attributes extends Record<string, any> {
-  key?: Key;
-  children?: HuyuNode;
-  ref?: Ref;
-}
-
-export type HuyuText = string | number;
-
-export interface HuyuElement<P extends Attributes = any, T = string> {
-  type: T;
-  props: P;
-  key: string;
-}
-
-export type HuyuNode =
-  | HuyuText
-  | HuyuElement
-  | HuyuNode[]
+export type ComponentChild =
+  | VNode<any>
+  | object
+  | string
+  | number
+  | bigint
   | boolean
   | null
   | undefined;
+export type ComponentChildren = ComponentChild[] | ComponentChild;
 
-export interface FC<P extends Attributes = {}> {
-  (props: P): HuyuElement<P> | null;
-  fiber?: IFiber;
-  tag?: number;
-  type?: string;
-}
-
-export type HTMLElementEx = HTMLElement & { last: IFiber | null };
-
-export interface IFiber<P extends Attributes = any> {
-  key?: string;
-  type: string | FC<P>;
-  parentNode: HTMLElementEx;
-  childNodes: any;
-  node: HTMLElementEx;
-  kids?: any;
-  return?: IFiber<P>;
-  sibling?: IFiber<P>;
-  child?: IFiber<P>;
-  done?: () => void;
-  lane: number;
-  // ref: IRef;
-  // hooks: IHook;
-  // oldProps: P;
-  // after: any;
-  // props: P;
-  // lane: number;
-  // time: number;
-  // e: IFiber;
-  // prev: IFiber;
-  // d: IFiber;
-  // laziness: any[];
-  // dirty: boolean;
-  // isComp: boolean;
-  // walker: any;
+export interface VNode<P = {}> {
+  type: string;
+  props: P & { children: ComponentChildren };
+  key: Key;
+  /**
+   * ref is not guaranteed by React.ReactElement, for compatibility reasons
+   * with popular react libs we define it as optional too
+   * - from preact
+   */
+  ref?: Ref<any> | null;
+  /**
+   * The time this `vnode` started rendering. Will only be set when
+   * the devtools are attached.
+   * Default value: `0`
+   * - from preact
+   */
+  startTime?: number;
+  /**
+   * The time that the rendering of this `vnode` was completed. Will only be
+   * set when the devtools are attached.
+   * Default value: `-1`
+   * - from preact
+   */
+  endTime?: number;
 }
