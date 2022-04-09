@@ -19,30 +19,34 @@ export type ComponentChild =
   | boolean
   | null
   | undefined;
-export type ComponentChildren = ComponentChild[] | ComponentChild;
+export type ComponentChildren = ComponentChild[];
 
-export interface VNode<P = {}> {
+export interface VNode<P = Record<string, any>> {
+  /**
+   * We use string to simplify the code, later on this may change to specific componentType like
+   * preact or simple Function component type like fre
+   */
   type: string;
   props: P & { children: ComponentChildren };
   key: Key;
   /**
    * ref is not guaranteed by React.ReactElement, for compatibility reasons
    * with popular react libs we define it as optional too
-   * - from preact
+   * - from preact @link https://github.com/preactjs/preact/blob/master/src/internal.d.ts
    */
   ref?: Ref<any> | null;
   /**
    * The time this `vnode` started rendering. Will only be set when
    * the devtools are attached.
    * Default value: `0`
-   * - from preact
+   * - from preact @link https://github.com/preactjs/preact/blob/master/src/internal.d.ts
    */
   startTime?: number;
   /**
    * The time that the rendering of this `vnode` was completed. Will only be
    * set when the devtools are attached.
    * Default value: `-1`
-   * - from preact
+   * - from preact @link https://github.com/preactjs/preact/blob/master/src/internal.d.ts
    */
   endTime?: number;
 }

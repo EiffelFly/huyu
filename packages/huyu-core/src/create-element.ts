@@ -7,14 +7,14 @@ export const createRef = (): Ref<null> => {
 
 export const createElement = (
   type: string,
-  props: object | null | undefined,
+  props: Record<string, any> | null | undefined,
   children: ComponentChildren[]
 ) => {
   let normalizedProps: VNode["props"] = {
     children: [],
   };
-  let key: string;
-  let ref: Ref<any>;
+  let key: string | undefined = undefined;
+  let ref: Ref<any> | undefined = undefined;
 
   for (const i in props) {
     if (i === "key") {
