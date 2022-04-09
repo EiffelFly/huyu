@@ -53,6 +53,7 @@ export interface IFiber<P extends Attributes = any> {
   sibling?: IFiber<P>;
   child?: IFiber<P>;
   done?: () => void;
+  lane: number;
   // ref: IRef;
   // hooks: IHook;
   // oldProps: P;
