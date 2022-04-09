@@ -1,4 +1,5 @@
 import { ComponentChildren, Ref, VNode } from "./type";
+import { TEXT_ELEMENT } from "./constant";
 
 export const createRef = (): Ref<null> => {
   return { current: null };
@@ -30,7 +31,9 @@ export const createElement = (
   // @link https://github.com/preactjs/preact/blob/c18db4d89dad77c1a728e5323720397986d198b8/src/create-element.js#L27
 
   if (children.length > 0) {
-    normalizedProps["children"] = children;
+    normalizedProps["children"] = children.map((c) =>
+      c instanceof Object ? c : createTextElement(c)
+    );
   } else {
     normalizedProps["children"] = [];
   }
@@ -43,4 +46,10 @@ export const createElement = (
   };
 
   return vNode;
+};
+
+export const createTextElement = (
+  value: string | number | bigint | boolean
+) => {
+  return createElement(TEXT_ELEMENT, { nodeValue: value.toString() }, []);
 };
