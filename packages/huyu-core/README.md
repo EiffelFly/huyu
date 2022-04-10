@@ -29,10 +29,17 @@ Define the necessary types: VNode, Ref, Component children type, Key.
   props: {
     children: [
       {
-        type: "TEXT",
+        type: "h1",
         props: {
-          nodeValue: "This is a Text node",
-          children: []
+          children: [
+            {
+              type: "text",
+              props: {
+                nodeValue: "This is a Text node"
+                children: []
+              }
+            }
+          ]
         }
       }
     ]
