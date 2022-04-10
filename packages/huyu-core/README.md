@@ -166,7 +166,7 @@ esbuild
 
 </details>
 
-## 4 - Add custom jsx-runtime
+## 4 - Add jsx support and custom jsx-runtime
 
 <details>
   <summary>Implementation details</summary>
@@ -204,6 +204,30 @@ export { createElement, createElement as h, render };
   "compilerOptions": {
     "jsx": "react-jsx"
   }
+}
+```
+
+### Export jsx-runtime.js file for other usage
+
+```js
+import { createElement, Fragment } from "./src/create-element";
+export { createElement as jsx, createElement as jsxs, Fragment };
+```
+
+```js
+// at package.json
+
+{
+  "exports": {
+    ".": {
+      "import": "./build/index.js",
+      "require": "./build/index.js"
+    },
+    "./jsx-runtime": {
+      "import": "./jsx-runtime.js",
+      "require": "./jsx-runtime.js"
+    }
+  },
 }
 ```
 
