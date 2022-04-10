@@ -166,54 +166,50 @@ esbuild
 
 </details>
 
-## 4 - Add Babel to transform jsx and custom jsx-runtime
+## 4 - Add custom jsx-runtime
 
-### Implement Fragment
+<details>
+  <summary>Implementation details</summary>
 
-```js
-export const Fragment = (props) => {
-  return props.children;
-};
-```
+  ### export jsx-runtime for others to use
 
-### export jsx-runtime for others to use
+  - We borrow jsx type from @types/react
+  - We overwrite default jsx function with tsconfig
 
-- We borrow jsx type from @types/react
-- We overwrite default jsx function with tsconfig
+  ```js
+  // At core entrypoint, we need to export the jsx function we want vite to use
 
-```js
-// At core entrypoint, we need to export the jsx function we want vite to use
+  import { createElement } from "./create-element";
+  import { render } from "./reconcile";
 
-import { createElement, Fragment } from "./create-element";
-import { render } from "./reconcile";
+  export * from "./constant";
+  export { createElement, createElement as h, render };
 
-export * from "./constant";
-export { createElement, createElement as h, render, Fragment };
+  // At app tsconfig, we need to specific which jsx-function to use
 
-// At app tsconfig, we need to specific which jsx-function to use
-
-{
-  "compilerOptions": {
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment"
-  },
-}
-```
-
-- This process is a little bit magical, you can confirm this behavior by insert some console.log in your `createElement` or replace custom jsx-function with regular react-jsx, because you doesn't install react, this will throw error
-
-```json
-// tsconfig.json
-{
-  "compilerOptions": {
-    "jsx": "react-jsx"
+  {
+    "compilerOptions": {
+      "jsx": "react",
+      "jsxFactory": "h",
+      "jsxFragmentFactory": "Fragment"
+    },
   }
-}
-```
+  ```
 
-#### Reference
+  - This process is a little bit magical, you can confirm this behavior by insert some console.log in your `createElement` or replace custom jsx-function with regular react-jsx, because you doesn't install react, this will throw error
 
-- [React - Introducing the New JSX Transform](https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html)
-- [Vite features - JSX](https://vitejs.dev/guide/features.html#jsx)
-- [esbuild - support react 17 jsx issue](https://github.com/evanw/esbuild/issues/334#issuecomment-1054699157)
+  ```json
+  // tsconfig.json
+  {
+    "compilerOptions": {
+      "jsx": "react-jsx"
+    }
+  }
+  ```
+
+  #### Reference
+
+  - [React - Introducing the New JSX Transform](https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html)
+  - [Vite features - JSX](https://vitejs.dev/guide/features.html#jsx)
+  - [esbuild - support react 17 jsx issue](https://github.com/evanw/esbuild/issues/334#issuecomment-1054699157)
+</details>
