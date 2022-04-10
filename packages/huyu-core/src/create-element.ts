@@ -8,7 +8,7 @@ export const createRef = (): Ref<null> => {
 export const createElement = (
   type: string,
   props: Record<string, any> | null | undefined,
-  children: ComponentChildren
+  ...children: ComponentChildren
 ) => {
   let normalizedProps: VNode["props"] = {
     children: [],
@@ -49,5 +49,5 @@ export const createElement = (
 export const createTextElement = (
   value: string | number | bigint | boolean
 ) => {
-  return createElement(TEXT_ELEMENT, { nodeValue: value.toString() }, []);
+  return createElement(TEXT_ELEMENT, { nodeValue: value.toString() });
 };
