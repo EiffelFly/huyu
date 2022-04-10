@@ -51,7 +51,3 @@ export const createTextElement = (
 ) => {
   return createElement(TEXT_ELEMENT, { nodeValue: value.toString() });
 };
-
-export const Fragment = (props) => {
-  return props.children;
-};
