@@ -8,7 +8,7 @@ export const createRef = (): Ref<null> => {
 export const createElement = (
   type: string,
   props: Record<string, any> | null | undefined,
-  children: ComponentChildren[]
+  children: ComponentChildren
 ) => {
   let normalizedProps: VNode["props"] = {
     children: [],
@@ -26,7 +26,7 @@ export const createElement = (
     }
   }
 
-  // What happened if we have children as [] not undefined or null?
+  // What happened if we have children as [] instead of undefined or null?
   // preact - children.length > 3 ? slice.call(arguments, 2) : children;
   // @link https://github.com/preactjs/preact/blob/c18db4d89dad77c1a728e5323720397986d198b8/src/create-element.js#L27
 
@@ -34,8 +34,6 @@ export const createElement = (
     normalizedProps["children"] = children.map((c) =>
       c instanceof Object ? c : createTextElement(c)
     );
-  } else {
-    normalizedProps["children"] = [];
   }
 
   const vNode: VNode = {
