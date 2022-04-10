@@ -9,7 +9,7 @@ export const createElement = (
   type: string,
   props: Record<string, any> | null | undefined,
   ...children: ComponentChildren
-) => {
+): VNode<Record<string, any>> => {
   let normalizedProps: VNode["props"] = {
     children: [],
   };
@@ -50,4 +50,8 @@ export const createTextElement = (
   value: string | number | bigint | boolean
 ) => {
   return createElement(TEXT_ELEMENT, { nodeValue: value.toString() });
+};
+
+export const Fragment = (props) => {
+  return props.children;
 };
