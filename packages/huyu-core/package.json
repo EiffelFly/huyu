@@ -16,7 +16,7 @@
       "require": "./jsx-runtime.js"
     }
   },
-  "typings": "build/index.d.ts",
+  "typings": "./build/index.d.ts",
   "devDependencies": {
     "esbuild": "^0.14.34",
     "esbuild-node-externals": "^1.4.1",
