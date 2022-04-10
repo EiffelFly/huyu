@@ -12,22 +12,21 @@ export type Ref<T> = RefObject<T> | RefCallback<T>;
 
 export type ComponentChild =
   | VNode<any>
-  | object
   | string
   | number
-  | bigint
   | boolean
   | null
   | undefined;
+
 export type ComponentChildren = ComponentChild[];
 
-export interface VNode<P = Record<string, any>> {
+export interface VNode<P = {}> {
   /**
    * We use string to simplify the code, later on this may change to specific componentType like
    * preact or simple Function component type like fre
    */
   type: string;
-  props: P & { children: ComponentChildren };
+  props: P & { children: VNode[] };
   key: Key;
   /**
    * ref is not guaranteed by React.ReactElement, for compatibility reasons
