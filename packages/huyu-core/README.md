@@ -231,9 +231,59 @@ export { createElement as jsx, createElement as jsxs, Fragment };
 }
 ```
 
+### With Vite config
+
+The method above can achieve our goal, but we have to manually import our namespace, in order to access createElement function.
+
+We could leverage vite to help us, in this way we don't need to manually import anymore
+
+```js
+// vite.config.js
+
+import { defineConfig } from "vite";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  esbuild: {
+    jsxFactory: "_jsx",
+    jsxFragment: "_jsxFragment",
+
+    // We use import as to avoid duplicate identifier
+    jsxInject: `import { createElement as _jsx, Fragment as _jsxFragment } from "@huyu/core";`,
+  },
+});
+```
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "jsx": "preserve"
+  }
+}
+```
+
 #### Reference
 
 - [React - Introducing the New JSX Transform](https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html)
 - [Vite features - JSX](https://vitejs.dev/guide/features.html#jsx)
 - [esbuild - support react 17 jsx issue](https://github.com/evanw/esbuild/issues/334#issuecomment-1054699157)
 </details>
+
+# 5 - Support Fragment
+
+### Add Fragment
+
+Fragment is just a function which return children
+
+```js
+export const Fragment = (props) => {
+  return props.children;
+};
+```
+
+# 6 - Support custome component
+
+# 7 - Add Instance
+
+# 8 - diff
