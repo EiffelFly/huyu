@@ -3,10 +3,13 @@ import { FC, VNode } from "./type";
 
 export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
   let element: Text | Element;
-  let wip: VNode
+  let wip: VNode;
 
   if (typeof vNode.type === "function") {
     console.log("hi i am function component");
+
+    wip = vNode.type(vNode.props);
+
   } else if (typeof vNode.type === "object") {
     console.log("hi i am named component");
     wip = vNode.type;
