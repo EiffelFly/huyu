@@ -276,7 +276,15 @@ export default defineConfig({
 - [esbuild - support react 17 jsx issue](https://github.com/evanw/esbuild/issues/334#issuecomment-1054699157)
 </details>
 
-# 5 - Support custom component
+# 5 - Support named component
+
+<details>
+  <summary>Observations</summary>
+  - Observations
+    - It's not that elegant to do the if...condition to render vNode
+    - Looks like other lib, fre.js and preact.js all have some abstract layer to make this much more performant or elegant
+    - On the other hand, this method is very easy to read.
+</details>
 
 <details>
   <summary>Implementation details</summary>
