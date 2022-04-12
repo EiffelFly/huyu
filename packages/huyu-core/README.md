@@ -1,8 +1,8 @@
-## 0 - Define type
+# 0 - Define type
 
 Define the necessary types: VNode, Ref, Component children type, Key.
 
-## 1 - Fundamental function: CreateElement, render
+# 1 - Fundamental function: CreateElement, render
 
 <details>
   <summary>Observations</summary>
@@ -99,7 +99,7 @@ const profile = React.createElement(
 - Recursive append children. - Very deep recursion may cause stackoverflow.
 </details>
 
-## 2 - Setup esbuild
+# 2 - Setup esbuild
 
 <details>
   <summary>Implementation details</summary>
@@ -155,7 +155,7 @@ esbuild
 
 </details>
 
-## 3 - recursive render children
+# 3 - recursive render children
 
 <details>
   <summary>Observations</summary>
@@ -172,7 +172,7 @@ esbuild
 
 </details>
 
-## 4 - Add jsx support and custom jsx-runtime
+# 4 - Add jsx support and custom jsx-runtime
 
 <details>
   <summary>Implementation details</summary>
@@ -422,8 +422,13 @@ export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
 - [Babel-test: try how babel compile jsx](https://babeljs.io/repl/#?browsers=defaults%2C%20not%20ie%2011%2C%20not%20ie_mob%2011&build=&builtIns=false&corejs=3.21&spec=false&loose=false&code_lz=GYVwdgxgLglg9mABACwKYBt1wBQEpEDeAUIogE6pQhlIA8AJjAG4B8AEhlogO5xnr0AhLQD0jVgG4iAXyJA&debug=false&forceAllTransforms=false&shippedProposals=false&circleciRepo=&evaluate=false&fileSize=false&timeTravel=false&sourceType=module&lineWrap=true&presets=react&prettier=false&targets=&version=7.17.9&externalPlugins=&assumptions=%7B%7D)
 </details>
 
+# 6 - Support function component
 
-# 6 - Support Fragment
+
+
+
+
+# 7 - Support Fragment
 
 Caveat, normally you may try to implement Fragment first, but that is not ideal, you may lack of mindset about how to implement component. Fragment is just a component that return children
 
