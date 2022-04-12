@@ -285,7 +285,7 @@ export default defineConfig({
   - It's not that elegant to do the if...condition to render vNode
   - Looks like other lib, fre.js and preact.js all have some abstract layer to make this much more performant or elegant
   - On the other hand, this method is very easy to read.
-  
+
 </details>
 
 <details>
@@ -427,8 +427,50 @@ export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
 # 6 - Support function component
 
 
+<details>
+  <summary>Implementation details</summary>
 
+- Function components are different from named and normal component 
+  - Children come from running the function instead of getting them directly from the props
 
+the wip comes from running the function component
+
+```js
+import { SVG_ELEMENT, TEXT_ELEMENT } from "./constant";
+import { FC, VNode } from "./type";
+
+export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
+  let element: Text | Element;
+  let wip: VNode;
+
+  if (typeof vNode.type === "function") {
+    console.log("hi i am function component");
+
+    wip = vNode.type(vNode.props);
+
+  } else if (typeof vNode.type === "object") {
+    console.log("hi i am named component");
+    wip = vNode.type;
+  } else {
+    wip = vNode;
+  }
+
+  let wipType = wip.type as string;
+
+  if (wipType === TEXT_ELEMENT) {
+    element = document.createTextNode(
+      (wip as VNode<{ nodeValue: string }>).props.nodeValue
+    );
+  } else if (wipType === SVG_ELEMENT) {
+    element = document.createElementNS("http://www.w3.org/2000/svg", wipType);
+  } else {
+    element = document.createElement(wipType);
+  }
+
+  // <--snip-->
+};
+```
+</details>
 
 # 7 - Support Fragment
 
