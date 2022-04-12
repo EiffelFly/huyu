@@ -20,12 +20,17 @@ export type ComponentChild =
 
 export type ComponentChildren = ComponentChild[];
 
+export interface FC<P = {}> {
+  (props: P): VNode<any> | null;
+  type: string;
+}
+
 export interface VNode<P = {}> {
   /**
    * We use string to simplify the code, later on this may change to specific componentType like
    * preact or simple Function component type like fre
    */
-  type: string;
+  type: string | FC<P>;
   props: P & { children: VNode[] };
   key: Key;
   /**
