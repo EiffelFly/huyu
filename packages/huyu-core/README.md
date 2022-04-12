@@ -280,10 +280,12 @@ export default defineConfig({
 
 <details>
   <summary>Observations</summary>
-  - Observations
-    - It's not that elegant to do the if...condition to render vNode
-    - Looks like other lib, fre.js and preact.js all have some abstract layer to make this much more performant or elegant
-    - On the other hand, this method is very easy to read.
+
+- Observations
+  - It's not that elegant to do the if...condition to render vNode
+  - Looks like other lib, fre.js and preact.js all have some abstract layer to make this much more performant or elegant
+  - On the other hand, this method is very easy to read.
+  
 </details>
 
 <details>
