@@ -1,18 +1,29 @@
 import { SVG_ELEMENT, TEXT_ELEMENT } from "./constant";
-import { VNode } from "./type";
+import { FC, VNode } from "./type";
 
 export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
   let element: Text | Element;
-  let nodeType = vNode.type;
+  let wip: VNode
 
-  if (nodeType === TEXT_ELEMENT) {
-    element = document.createTextNode(
-      (vNode as VNode<{ nodeValue: string }>).props.nodeValue
-    );
-  } else if (nodeType === SVG_ELEMENT) {
-    element = document.createElementNS("http://www.w3.org/2000/svg", nodeType);
+  if (typeof vNode.type === "function") {
+    console.log("hi i am function component");
+  } else if (typeof vNode.type === "object") {
+    console.log("hi i am named component");
+    wip = vNode.type;
   } else {
-    element = document.createElement(nodeType);
+    wip = vNode;
+  }
+
+  let wipType = wip.type as string;
+
+  if (wipType === TEXT_ELEMENT) {
+    element = document.createTextNode(
+      (wip as VNode<{ nodeValue: string }>).props.nodeValue
+    );
+  } else if (wipType === SVG_ELEMENT) {
+    element = document.createElementNS("http://www.w3.org/2000/svg", wipType);
+  } else {
+    element = document.createElement(wipType);
   }
 
   // This is not how the react work, in practice we should setting attributes with setAttribute
@@ -24,7 +35,7 @@ export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
   // }
 
   // recursive append children element
-  (vNode.props.children || []).forEach((child) => render(child, element));
+  (wip.props.children || []).forEach((child) => render(child, element));
 
   if (!ownerDom) {
     return element;
