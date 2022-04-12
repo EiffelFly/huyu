@@ -4,12 +4,15 @@ Define the necessary types: VNode, Ref, Component children type, Key.
 
 ## 1 - Fundamental function: CreateElement, render
 
+<details>
+  <summary>Observations</summary>
 - Observations
 
   - key and ref are necessary but ugly(They are fundamental as same as props but move out of props to make diff algorithm easier to write)
 
 - Questions
   - How to make the function very easy to understand?
+</details>
 
 <details>
   <summary>Implementation details</summary>
@@ -154,8 +157,11 @@ esbuild
 
 ## 3 - recursive render children
 
+<details>
+  <summary>Observations</summary>
 - Observations
   - render's recursion is beautiful but may cause stackoverflow, how to deal with that?
+</details>
 
 <details>
   <summary>Implementation details</summary>
@@ -270,19 +276,171 @@ export default defineConfig({
 - [esbuild - support react 17 jsx issue](https://github.com/evanw/esbuild/issues/334#issuecomment-1054699157)
 </details>
 
-# 5 - Support Fragment
+# 5 - Support custom component
+
+<details>
+  <summary>Implementation details</summary>
+
+when we have sytax like
+
+```js
+<MyButton color="blue" shadowSize={2}>
+  Click Me
+</MyButton>
+```
+
+it compiles to
+
+```js
+React.createElement(MyButton, { color: "blue", shadowSize: 2 }, "Click Me");
+```
+
+This is why the VNode["type"] will have type like this
+
+```js
+const component = <div>component</div>
+
+
+// -- After JSX transformation --
+// Type is component's element
+{
+  "type": {
+    "type": "div",
+    "props": {
+      "children": [
+        {
+          "type": "text",
+          "props": {
+              "children": [],
+              "nodeValue": "component"
+          }
+        }
+      ]
+    }
+  },
+  "props": {
+      "children": []
+  }
+}
+```
+
+Because jsx expression can only have one parent, so if we change component like this, the props.children will still be empty
+
+```js
+const Component = (
+  <div>
+    <span>component</span>
+    <div>hi</div>
+  </div>
+);
+
+// -- After JSX transformation --
+{
+  "type": {
+    "type": "div",
+    "props": {
+      "children": [
+        {
+          "type": "span",
+          "props": {
+            "children": [
+              {
+                "type": "text",
+                "props": {
+                  "children": [],
+                  "nodeValue": "component"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "div",
+          "props": {
+            "children": [
+              {
+                "type": "text",
+                "props": {
+                  "children": [],
+                  "nodeValue": "hi"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "props": {
+    "children": []
+  }
+}
+```
+
+When we encounter element like this, we have to recognize type as element
+
+```js
+export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
+  let element: Text | Element;
+  let wip: VNode
+
+  if (typeof vNode.type === "function") {
+    console.log("hi i am function component");
+  } else if (typeof vNode.type === "object") {
+    console.log("hi i am named component");
+    wip = vNode.type;
+  } else {
+    wip = vNode;
+  }
+
+  let wipType = wip.type as string;
+
+  if (wipType === TEXT_ELEMENT) {
+    element = document.createTextNode(
+      (wip as VNode<{ nodeValue: string }>).props.nodeValue
+    );
+  } else if (wipType === SVG_ELEMENT) {
+    element = document.createElementNS("http://www.w3.org/2000/svg", wipType);
+  } else {
+    element = document.createElement(wipType);
+  }
+  // <--snip-->
+};
+
+```
+
+#### Reference
+
+- [Babel-test: try how babel compile jsx](https://babeljs.io/repl/#?browsers=defaults%2C%20not%20ie%2011%2C%20not%20ie_mob%2011&build=&builtIns=false&corejs=3.21&spec=false&loose=false&code_lz=GYVwdgxgLglg9mABACwKYBt1wBQEpEDeAUIogE6pQhlIA8AJjAG4B8AEhlogO5xnr0AhLQD0jVgG4iAXyJA&debug=false&forceAllTransforms=false&shippedProposals=false&circleciRepo=&evaluate=false&fileSize=false&timeTravel=false&sourceType=module&lineWrap=true&presets=react&prettier=false&targets=&version=7.17.9&externalPlugins=&assumptions=%7B%7D)
+</details>
+
+
+# 6 - Support Fragment
+
+Caveat, normally you may try to implement Fragment first, but that is not ideal, you may lack of mindset about how to implement component. Fragment is just a component that return children
 
 ### Add Fragment
 
 Fragment is just a function which return children
 
 ```js
+// Add Fragment
 export const Fragment = (props) => {
   return props.children;
 };
+
+// Use Fragment
+const Test = (
+  <Fragment key={"test"}>
+    <div>test</div>
+  </Fragment>
+);
+render(Test, document.getElementById("root"));
 ```
 
-# 6 - Support custome component
+### Error
+
+> Uncaught DOMException: Failed to execute 'createElement' on 'Document': The tag name provided ('e=>e.children') is not a valid name.
 
 # 7 - Add Instance
 
