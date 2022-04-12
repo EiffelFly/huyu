@@ -446,6 +446,7 @@ export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
   if (typeof vNode.type === "function") {
     console.log("hi i am function component");
 
+    // Run the function component to get the children
     wip = vNode.type(vNode.props);
 
   } else if (typeof vNode.type === "object") {
