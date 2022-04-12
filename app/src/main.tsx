@@ -19,13 +19,34 @@ import { render, Fragment } from "@huyu/core";
 
 /** JSX - named component */
 
-const Component = (
-  <div>
-    <span>component</span>
-    <div>hi</div>
-  </div>
-);
+// const Component = (
+//   <div>
+//     <span>component</span>
+//     <div>hi</div>
+//   </div>
+// );
 
-console.log(<Component />);
+// render(<Component />, document.getElementById("root"));
 
-render(<Component />, document.getElementById("root"));
+/** JSX - function component */
+
+const Component = () => {
+  return (
+    <div>
+      <span>hihi</span>
+      <span>hi</span>
+    </div>
+  );
+};
+
+const Container = () => {
+  return (
+    <div>
+      <Component />
+    </div>
+  );
+};
+
+console.log(Container);
+
+render(<Container />, document.getElementById("root"));
