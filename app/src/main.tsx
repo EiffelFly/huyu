@@ -1,4 +1,4 @@
-import { render, createElement, h } from "@huyu/core";
+import { render, Fragment } from "@huyu/core";
 
 /* The old way to generate element and related dom object */
 
@@ -7,8 +7,25 @@ import { render, createElement, h } from "@huyu/core";
 // const headerContainer = createElement("h1", {}, iAm, hi);
 // render(headerContainer, document.getElementById("root"));
 
-/* the jsx way */
+/* JSX - normal component */
 
-const test = <div>test</div>;
+// const test = (
+//   <div>
+//     <div>test</div>
+//   </div>
+// );
 
-render(test, document.getElementById("root"));
+// render(test, document.getElementById("root"));
+
+/** JSX - named component */
+
+const Component = (
+  <div>
+    <span>component</span>
+    <div>hi</div>
+  </div>
+);
+
+console.log(<Component />);
+
+render(<Component />, document.getElementById("root"));
