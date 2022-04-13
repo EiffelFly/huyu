@@ -1,4 +1,4 @@
-import { ComponentChildren, FC, Ref, VNode } from "./type";
+import { ComponentChildren, FC, HuyuElement, Ref, VNode } from "./type";
 import { TEXT_ELEMENT } from "./constant";
 
 export const createRef = (): Ref<null> => {
@@ -32,6 +32,20 @@ export const createElement = (
       children: kids,
     },
   };
+};
+
+export const createVNode = (element: HuyuElement) => {
+  if (element.type instanceof Function) {
+    return createVNode(element.type(element.props));
+  } else if (element.type instanceof Object) {
+    return createVNode(element.type);
+  } else
+    return {
+      type: element.type,
+      props: element.props,
+      key: element.key,
+      ref: element.ref,
+    };
 };
 
 export const createTextElement = (
