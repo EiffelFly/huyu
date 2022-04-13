@@ -7,7 +7,7 @@ export const render = (
   ownerDom: Element | null | Text
 ) => {
   let vNode = createVNode(huyuElement);
-  let dom = createDOM(vNode, ownerDom);
+  return createDOM(vNode, ownerDom);
 };
 
 export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
