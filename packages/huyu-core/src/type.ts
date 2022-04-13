@@ -25,6 +25,15 @@ export interface FC<P = {}> {
   type: string;
 }
 
+export interface HuyuElement<P = {}> {
+  type: string | HuyuElement | Function;
+  props: P & { children: HuyuElement[] };
+  key: Key;
+  ref?: Ref<any> | null;
+}
+
+export type VDom = VNode | VNode[];
+
 export interface VNode<P = {}> {
   /**
    * We use string to simplify the code, later on this may change to specific componentType like
