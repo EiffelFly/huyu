@@ -8,11 +8,11 @@ Define the necessary types: VNode, Ref, Component children type, Key.
   <summary>Observations</summary>
 - Observations
 
-  - key and ref are necessary but ugly(They are fundamental as same as props but move out of props to make diff algorithm easier to write)
+- key and ref are necessary but ugly(They are fundamental as same as props but move out of props to make diff algorithm easier to write)
 
 - Questions
   - How to make the function very easy to understand?
-</details>
+  </details>
 
 <details>
   <summary>Implementation details</summary>
@@ -308,9 +308,9 @@ React.createElement(MyButton, { color: "blue", shadowSize: 2 }, "Click Me");
 This is why the VNode["type"] will have type like this
 
 ```js
-const component = <div>component</div>
+const Component = <div>component</div>
 
-
+console.log(<Component />)
 // -- After JSX transformation --
 // Type is component's element
 {
@@ -343,6 +343,8 @@ const Component = (
     <div>hi</div>
   </div>
 );
+
+console.log(<Component />)
 
 // -- After JSX transformation --
 {
@@ -426,11 +428,10 @@ export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
 
 # 6 - Support function component
 
-
 <details>
   <summary>Implementation details</summary>
 
-- Function components are different from named and normal component 
+- Function components are different from named and normal component
   - Children come from running the function instead of getting them directly from the props
 
 the wip comes from running the function component
@@ -471,6 +472,7 @@ export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
   // <--snip-->
 };
 ```
+
 </details>
 
 # 7 - Support Fragment
@@ -478,6 +480,9 @@ export const render = (vNode: VNode, ownerDom: Element | null | Text) => {
 Caveat, normally you may try to implement Fragment first, but that is not ideal, you may lack of mindset about how to implement component. Fragment is just a component that return children
 
 ### Add Fragment
+
+<details>
+  <summary>Implementation details</summary>
 
 Fragment is just a function which return children
 
@@ -496,10 +501,170 @@ const Test = (
 render(Test, document.getElementById("root"));
 ```
 
+Here is fragment object after being processed by `createElement`
+
+```js
+
+
+const Frag = (
+  <Fragment>
+    <div>hi</div>
+  </Fragment>
+);
+
+// console.log(Frag)
+
+{
+  "props": {
+    "children": [
+      {
+        "type": "div",
+        "props": {
+          "children": [
+            {
+              "type": "text",
+              "props": {
+                  "children": [],
+                  "nodeValue": "hi"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+
+// console.log(<Frag />)
+
+{
+  "type": {
+    "props": {
+      "children": [
+        {
+          "type": "div",
+          "props": {
+            "children": [
+              {
+                "type": "text",
+                "props": {
+                    "children": [],
+                    "nodeValue": "hi"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      // This is the fragment function component type
+      type: e=>e.children
+    }
+  },
+  "props": {
+    "children": []
+  }
+}
+
+```
+
+The processing tree before this section is
+
+- if (type=function) function component -> running function and get the children
+- if (type=object) named component -> recognize type as element
+- if (type=string) normal component -> process
+
+We need to have better processing tree
+
+- if (type=function) function component
+  - if (that_type=object) named compont
+  - if (that_type=string) normal component
+- if (type=object) named component
+  - if (that_type=function) function component
+  - if (that_type=string) normal component
+- if (type=string) named component
+
+This section will try to accomplish the following
+
+- The flow will be: jsx -> createElement -> createVNode(recursive generate VNode) -> reconcile -> createDOM/updateDOM
+- Simplize createElement function
+- Accept array as render target
+- Flatten array
+
+### createVDom
+
+Recursive function to implement better processing tree
+
+```js
+export const createVDom = (element: HuyuElement) => {
+  if (typeof element.type === "string") {
+    return element;
+  }
+
+  if (Array.isArray(element)) {
+    return element.map(createVDom).flat();
+  }
+
+  if (element.type instanceof Function) {
+    return createVDom(element.type(element.props));
+  }
+
+  if (element.type instanceof Object) {
+    return createVDom(element.type);
+  }
+};
+```
+
+### createDom
+
+Recursive function to create DOM including accept array as created target
+
+```js
+export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
+  if (Array.isArray(vDom)) {
+    return vDom.map((d) => createDOM(d, ownerDom));
+  }
+  let element: Text | Element;
+
+  if (vDom.type === TEXT_ELEMENT) {
+    element = document.createTextNode(
+      (vDom as VNode<{ nodeValue: string }>).props.nodeValue
+    );
+  } else if (vDom.type === SVG_ELEMENT) {
+    element = document.createElementNS("http://www.w3.org/2000/svg", vDom.type);
+  } else {
+    element = document.createElement(vDom.type as string);
+  }
+
+  (vDom.props.children || []).forEach((child) => render(child, element));
+
+  if (!ownerDom) {
+    return element;
+  } else {
+    return ownerDom.appendChild(element);
+  }
+};
+```
+
+### New render API
+
+```js
+export const render = (
+  huyuElement: HuyuElement,
+  ownerDom: Element | null | Text
+) => {
+  let vDom = createVDom(huyuElement);
+  return createDOM(vDom, ownerDom);
+};
+```
+
+</details>
+
+# 8 - Support named component wrap children
+
 ### Error
 
 > Uncaught DOMException: Failed to execute 'createElement' on 'Document': The tag name provided ('e=>e.children') is not a valid name.
 
-# 7 - Add Instance
+# 9 - Add Instance
 
-# 8 - diff
+# 10 - diff
