@@ -10,6 +10,7 @@ export const createElement = (
   props: Record<string, any> | null | undefined,
   ...children: ComponentChildren
 ) => {
+  props = props || {};
   let key = props.key || null;
   let ref = props.ref || null;
 
@@ -34,18 +35,22 @@ export const createElement = (
   };
 };
 
-export const createVNode = (element: HuyuElement) => {
+export const createVDom = (element: HuyuElement) => {
+  if (typeof element.type === "string") {
+    return element;
+  }
+
+  if (Array.isArray(element)) {
+    return element.map(createVDom).flat();
+  }
+
   if (element.type instanceof Function) {
-    return createVNode(element.type(element.props));
-  } else if (element.type instanceof Object) {
-    return createVNode(element.type);
-  } else
-    return {
-      type: element.type,
-      props: element.props,
-      key: element.key,
-      ref: element.ref,
-    };
+    return createVDom(element.type(element.props));
+  }
+
+  if (element.type instanceof Object) {
+    return createVDom(element.type);
+  }
 };
 
 export const createTextElement = (
