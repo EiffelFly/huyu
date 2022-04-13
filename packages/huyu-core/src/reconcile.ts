@@ -1,13 +1,13 @@
 import { SVG_ELEMENT, TEXT_ELEMENT } from "./constant";
-import { createVNode } from "./create-element";
+import { createVDom } from "./create-element";
 import { FC, HuyuElement, VDom, VNode } from "./type";
 
 export const render = (
   huyuElement: HuyuElement,
   ownerDom: Element | null | Text
 ) => {
-  let vNode = createVNode(huyuElement);
-  return createDOM(vNode, ownerDom);
+  let vDom = createVDom(huyuElement);
+  return createDOM(vDom, ownerDom);
 };
 
 export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
