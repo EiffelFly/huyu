@@ -1,4 +1,4 @@
-import { ComponentChildren, Ref, VNode } from "./type";
+import { ComponentChildren, FC, Ref, VNode } from "./type";
 import { TEXT_ELEMENT } from "./constant";
 
 export const createRef = (): Ref<null> => {
@@ -6,44 +6,32 @@ export const createRef = (): Ref<null> => {
 };
 
 export const createElement = (
-  type: string,
+  type: string | object | FC<any>,
   props: Record<string, any> | null | undefined,
   ...children: ComponentChildren
-): VNode<Record<string, any>> => {
-  let normalizedProps: VNode["props"] = {
-    children: [],
-  };
-  let key: string | undefined = undefined;
-  let ref: Ref<any> | undefined = undefined;
+) => {
+  let key = props.key || null;
+  let ref = props.ref || null;
 
-  for (const i in props) {
-    if (i === "key") {
-      key = props[i];
-    } else if (i === "ref") {
-      ref = props[i];
-    } else {
-      normalizedProps[i] = props[i];
-    }
-  }
+  if (key) props.key = undefined;
+  if (ref) props.ref = undefined;
 
-  // What happened if we have children as [] instead of undefined or null?
-  // preact - children.length > 3 ? slice.call(arguments, 2) : children;
-  // @link https://github.com/preactjs/preact/blob/c18db4d89dad77c1a728e5323720397986d198b8/src/create-element.js#L27
+  let kids =
+    children.length > 0
+      ? children.map((child) =>
+          child instanceof Object ? child : createTextElement(child)
+        )
+      : [];
 
-  if (children.length > 0) {
-    normalizedProps["children"] = children.map((c) =>
-      c instanceof Object ? c : createTextElement(c)
-    );
-  }
-
-  const vNode: VNode = {
+  return {
     type,
-    props: normalizedProps,
     key,
     ref,
+    props: {
+      ...props,
+      children: kids,
+    },
   };
-
-  return vNode;
 };
 
 export const createTextElement = (
