@@ -659,7 +659,6 @@ export const render = (
 
 </details>
 
-
 # 8 - Support array children
 
 <details>
@@ -766,7 +765,41 @@ export const createElement = (
 
 <details>
 
-# 9 - Support named component wrap children
+# 9 - Support named function component wrap children
+
+<details>
+  <summary>Implementation details</summary>
+
+Function component wrap with children is relative easy, we just run it and everything is done.
+
+```js
+// component
+const Foo = (props) => {
+  return <div>{props.children}</div>;
+};
+
+// -- After JSX transformation --
+// console.log(Foo)
+
+(props) => {
+  return /* @__PURE__ */ _jsx("div", null, props.children);
+}
+
+// -- After JSX transformation --
+// console.log(<Foo />)
+
+{
+  "type": (props) => {...}
+  "key": null,
+  "ref": null,
+  "props": {
+      "children": []
+  }
+}
+```
+</details>
+
+# 10 - A playground test whole scenario
 
 ### Error
 
