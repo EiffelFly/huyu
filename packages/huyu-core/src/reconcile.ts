@@ -14,6 +14,7 @@ export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
   if (Array.isArray(vDom)) {
     return vDom.map((d) => createDOM(d, ownerDom));
   }
+
   let element: Text | Element;
 
   if (vDom.type === TEXT_ELEMENT) {
@@ -26,7 +27,7 @@ export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
     element = document.createElement(vDom.type as string);
   }
 
-  (vDom.props.children || []).forEach((child) => render(child, element));
+  (vDom.props.children || []).forEach((child) => createDOM(child, element));
 
   if (!ownerDom) {
     return element;
