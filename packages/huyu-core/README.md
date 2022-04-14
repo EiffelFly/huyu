@@ -660,7 +660,7 @@ export const render = (
 </details>
 
 
-# 8 - Support children is array
+# 8 - Support array children
 
 <details>
   <summary>Implementation details</summary>
