@@ -62,14 +62,29 @@ import { render, Fragment } from "@huyu/core";
 
 // render(<Frag />, document.getElementById("root"));
 
-const Foo = (
-  <div>
-    {[0, 1].map((e) => (
-      <p>{`hi-${e}`}</p>
-    ))}
-  </div>
+/** JSX - Array children */
+
+// const Foo = (
+//   <div>
+//     {[0, 1].map((e) => (
+//       <p>{`hi-${e}`}</p>
+//     ))}
+//   </div>
+// );
+
+// render(Foo, document.getElementById("root"));
+
+/** JSX - Named function component wrap children */
+
+const Foo = (props) => {
+  return <div>{props.children}</div>;
+};
+
+const Bar = (
+  <Foo>
+    <div>hi</div>
+    <div>I am bar</div>
+  </Foo>
 );
 
-console.log(Foo, <Foo />);
-
-render(Foo, document.getElementById("root"));
+render(<Bar />, document.getElementById("root"));
