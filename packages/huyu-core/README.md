@@ -635,7 +635,7 @@ export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
     element = document.createElement(vDom.type as string);
   }
 
-  (vDom.props.children || []).forEach((child) => render(child, element));
+  (vDom.props.children || []).forEach((child) => createDOM(child, element));
 
   if (!ownerDom) {
     return element;
@@ -659,7 +659,114 @@ export const render = (
 
 </details>
 
-# 8 - Support named component wrap children
+
+# 8 - Support children is array
+
+<details>
+  <summary>Implementation details</summary>
+
+```js
+// component
+const Foo = (
+  <div>
+    {[0, 1].map((e) => (
+      <p>{`hi-${e}`}</p>
+    ))}
+  </div>
+);
+
+// -- After JSX transformation --
+
+{
+  "type": "div",
+  "key": null,
+  "ref": null,
+  "props": {
+    "children": [ // this is a nested list, in different implementation of react may cause error
+      [
+        {
+          "type": "p",
+          "key": null,
+          "ref": null,
+          "props": {
+            "children": [
+              {
+                "type": "text",
+                "key": null,
+                "ref": null,
+                "props": {
+                  "nodeValue": "hi-0",
+                  "children": []
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "p",
+          "key": null,
+          "ref": null,
+          "props": {
+            "children": [
+              {
+                "type": "text",
+                "key": null,
+                "ref": null,
+                "props": {
+                  "nodeValue": "hi-1",
+                  "children": []
+                }
+              }
+            ]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+we use this line to solve list problem
+
+```js
+// reconcile
+
+export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
+  if (Array.isArray(vDom)) {
+    return vDom.map((d) => createDOM(d, ownerDom));
+  }
+
+  //<-- snip -->
+};
+```
+
+You could also flatten the whole structure beforehand, but we choose to leave it for further usage.
+
+```js
+export const createElement = (
+  type: string | object | FC<any>,
+  props: Record<string, any> | null | undefined,
+  ...children: ComponentChildren
+) => {
+  //<-- snip -->
+
+  // We can flat children here, but for the purpose of this project, we leave nested list for
+  // further usage.
+
+  let kids =
+    children.length > 0
+      ? children.map((child) =>
+          child instanceof Object ? child : createTextElement(child)
+        )
+      : [];
+
+  //<-- snip -->
+};
+```
+
+<details>
+
+# 9 - Support named component wrap children
 
 ### Error
 
