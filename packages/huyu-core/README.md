@@ -765,7 +765,7 @@ export const createElement = (
 
 <details>
 
-# 9 - Support named function component wrap children
+# 9 - Support named function component wrapping children
 
 <details>
   <summary>Implementation details</summary>
