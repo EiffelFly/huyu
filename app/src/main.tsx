@@ -51,13 +51,25 @@ import { render, Fragment } from "@huyu/core";
 
 /** JSX - Fragment */
 
-const Frag = (
-  <Fragment>
-    <div>hi</div>
-    <div>I am array</div>
-  </Fragment>
+// const Frag = (
+//   <Fragment>
+//     <div>hi</div>
+//     <div>I am array</div>
+//   </Fragment>
+// );
+
+// console.log(<Frag />);
+
+// render(<Frag />, document.getElementById("root"));
+
+const Foo = (
+  <div>
+    {[0, 1].map((e) => (
+      <p>{`hi-${e}`}</p>
+    ))}
+  </div>
 );
 
-console.log(<Frag />);
+console.log(Foo, <Foo />);
 
-render(<Frag />, document.getElementById("root"));
+render(Foo, document.getElementById("root"));
