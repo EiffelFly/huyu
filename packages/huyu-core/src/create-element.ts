@@ -17,6 +17,9 @@ export const createElement = (
   if (key) props.key = undefined;
   if (ref) props.ref = undefined;
 
+  // We can flat children here, but for the purpose of this project, we leave nested list for 
+  // further usage.
+
   let kids =
     children.length > 0
       ? children.map((child) =>
@@ -41,7 +44,7 @@ export const createVDom = (element: HuyuElement) => {
   }
 
   if (Array.isArray(element)) {
-    return element.map(createVDom).flat();
+    return element.map(createVDom)
   }
 
   if (element.type instanceof Function) {
