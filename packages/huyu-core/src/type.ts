@@ -63,3 +63,5 @@ export interface VNode<P = {}> {
    */
   endTime?: number;
 }
+
+export type DOM = HTMLElement | Text | SVGSVGElement;
