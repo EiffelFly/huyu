@@ -1,21 +1,20 @@
 import { SVG_ELEMENT, TEXT_ELEMENT } from "./constant";
 import { createVDom } from "./create-element";
-import { FC, HuyuElement, VDom, VNode } from "./type";
+import { DOM, FC, HuyuElement, VDom, VNode } from "./type";
 
-export const render = (
-  huyuElement: HuyuElement,
-  ownerDom: Element | null | Text
-) => {
+export const render = (huyuElement: HuyuElement, ownerDom: DOM | null) => {
   let vDom = createVDom(huyuElement);
-  return createDOM(vDom, ownerDom);
+  let dom = createDom(vDom, ownerDom);
+  updateDom(dom, vDom.props);
+  return dom;
 };
 
-export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
+const createDom = (vDom: VDom, ownerDom: DOM) => {
   if (Array.isArray(vDom)) {
-    return vDom.map((d) => createDOM(d, ownerDom));
+    return vDom.map((d) => createDom(d, ownerDom));
   }
 
-  let element: Text | Element;
+  let element: HTMLElement | Text | SVGSVGElement;
 
   if (vDom.type === TEXT_ELEMENT) {
     element = document.createTextNode(
@@ -27,7 +26,7 @@ export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
     element = document.createElement(vDom.type as string);
   }
 
-  (vDom.props.children || []).forEach((child) => createDOM(child, element));
+  (vDom.props.children || []).forEach((child) => createDom(child, element));
 
   if (!ownerDom) {
     return element;
@@ -35,3 +34,39 @@ export const createDOM = (vDom: VDom, ownerDom: Element | null | Text) => {
     return ownerDom.appendChild(element);
   }
 };
+
+const updateDom = (dom: DOM, props) => {
+  for (const [key, value] of Object.entries(props)) {
+    console.log(key);
+    if (key === "children") {
+    } else if (key.startsWith("on")) {
+      updateDomEvent(dom, key, value);
+    } else if (key === "style") {
+      updateDomStyle(dom, value);
+    } else {
+      updateDomAttribute(dom, key, value);
+    }
+  }
+};
+
+const updateDomStyle = (dom: DOM, style) => {
+  for (const [key, value] of Object.entries(style)) {
+    dom["style"][key] = value;
+  }
+};
+
+const updateDomEvent = (dom: DOM, eventName: string, event) => {
+  dom.addEventListener(eventName.toLowerCase().substring(2), event);
+};
+
+const updateDomAttribute = (dom: DOM, attributeName, attribute) => {
+  dom[attributeName] = attribute;
+};
+
+// const isEvent = (key: string) => key.startsWith("on");
+// const isStyle = (key: string) => {
+//   return key === "style" && !isEvent(key);
+// };
+// const isProperty = (key:string) => {
+//   return key !== "children" && !isEvent(key) && !isStyle(key)
+// }
