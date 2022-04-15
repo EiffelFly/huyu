@@ -891,7 +891,108 @@ const updateDomAttribute = (dom: DOM, attributeName, attribute) => {
 
 </details>
 
-# 11 - A playground test whole scenario
+# 12 - Support aria-? attributes
+
+<details>
+  <summary>Implementation details</summary>
+
+In previous section, although we could add attributes, but if we encounter something like this, it will failed to update the attribue
+
+```js
+const Bar = () => {
+  return (
+    <button
+      key="bar"
+      className="hi"
+      aria-label="foo"
+      disabled={true}
+      style={{
+        width: "100px",
+        display: "flex",
+        padding: "12px",
+        backgroundColor: "grey",
+        color: "white",
+      }}
+      onClick={() => {
+        console.log("hello");
+      }}
+    >
+      <p style={{ margin: "0 auto", color: "honeydew" }}>Click me</p>
+    </button>
+  );
+};
+```
+
+Here is how we set these attributes.
+
+```js
+const updateDomAttribute = (dom: DOM, key, value) => {
+  dom[key] = value;
+};
+```
+
+The caveat is, for convience, some dom object have pre-defined property outside or attributes, such as style and HTMLInputElement have aria-? attributes.
+
+It all depends on the type of the element which is not reliable, for our usage, we better directly set the attributes.
+
+```js
+const updateDomAttribute = (dom: DOM, key, value) => {
+  (dom as SVGSVGElement | HTMLElement).setAttribute(key, value);
+};
+```
+
+Besides that, we want to avoid directly set key and ref attributes on dom
+
+```js
+const updateDom = (dom: DOM, props) => {
+  for (const [key, value] of Object.entries(props)) {
+    if (key === "children") {
+    } else if (key.startsWith("on")) {
+      updateDomEvent(dom, key, value);
+    } else if (key === "style") {
+      updateDomStyle(dom, value);
+    } else {
+      if (key === "key" || key === "ref") { // <---- we add this line
+        continue;
+      }
+      updateDomAttribute(dom, key, value);
+    }
+  }
+};
+```
+
+### Further reading
+
+- [SO: When to use setAttribute vs .attribute= in JavaScript?](https://stackoverflow.com/questions/3919291/when-to-use-setattribute-vs-attribute-in-javascript)
+
+</details>
+
+# 13 - Update nested children attributes
+
+In previous section we can update first layer of DOM, but we can't update children's dom
+
+```js
+const Bar = () => {
+  return (
+    <button
+      style={{
+        width: "100px",
+        display: "flex",
+        padding: "12px",
+        backgroundColor: "grey",
+        color: "white",
+      }}
+    >
+      /* this won't show */
+      <p style={{ margin: "0 auto", color: "honeydew" }}>Click me</p>
+    </button>
+  );
+};
+```
+
+We need to find a way to recursively update children
+
+# 14 - A playground test whole scenario
 
 <details>
   <summary>Implementation details</summary>
@@ -946,6 +1047,3 @@ const frag = () => {
 # 12 - Add Instance
 
 # 13 - diff
-
-
-# Support aria-? attributes
