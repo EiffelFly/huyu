@@ -765,7 +765,7 @@ export const createElement = (
 
 <details>
 
-# 9 - Support named function component wrapping children
+# 9 - Support named functional component wrapping children
 
 <details>
   <summary>Implementation details</summary>
@@ -797,14 +797,155 @@ const Foo = (props) => {
   }
 }
 ```
+
 </details>
 
-# 10 - A playground test whole scenario
+# 10 - add style, event and other properties
 
-### Error
+<details>
+  <summary>Implementation details</summary>
 
-> Uncaught DOMException: Failed to execute 'createElement' on 'Document': The tag name provided ('e=>e.children') is not a valid name.
+### Add style
 
-# 9 - Add Instance
+```js
+const Foo = () => {
+  return <div style={{ color: "blue" }}>hi</div>;
+};
 
-# 10 - diff
+// -- After JSX transformation --
+// console.log(Foo)
+
+() => {
+  return /* @__PURE__ */ _jsx("div", {
+    style: { color: "blue" }
+  }, "hi");
+}
+
+// -- After JSX transformation --
+// console.log(<Foo />)
+
+{
+  "type": () => {...}
+  "key": null,
+  "ref": null,
+  "props": {
+      "children": []
+  }
+}
+```
+
+We need to have a centralize place to call multiple update functions
+
+```js
+const updateDom = (dom: DOM, props) => {
+  for (const [key, value] of Object.entries(props)) {
+    console.log(key);
+    if (key === "children") {
+    } else if (key.startsWith("on")) {
+      updateDomEvent(dom, key, value);
+    } else if (key === "style") {
+      updateDomStyle(dom, value);
+    } else {
+      updateDomAttribute(dom, key, value);
+    }
+  }
+};
+```
+
+Then we have to update the style
+
+```js
+const updateDomStyle = (dom: DOM, style) => {
+  for (const [key, value] of Object.entries(style)) {
+    dom["style"][key] = value;
+  }
+};
+```
+
+Finally, our render method will call updateDom
+
+```js
+export const render = (huyuElement: HuyuElement, ownerDom: DOM) => {
+  let vDom = createVDom(huyuElement);
+  let dom = createDom(vDom, ownerDom);
+  updateDom(dom, huyuElement.props);
+  return dom;
+};
+```
+
+### Add event listener and other attributes
+
+In this way, we could update style, event and other attributes are almost the same
+
+```js
+const updateDomEvent = (dom: DOM, eventName: string, event) => {
+  dom.addEventListener(eventName.toLowerCase().substring(2), event);
+};
+```
+
+```js
+const updateDomAttribute = (dom: DOM, attributeName, attribute) => {
+  dom[attributeName] = attribute;
+};
+```
+
+</details>
+
+# 11 - A playground test whole scenario
+
+<details>
+  <summary>Implementation details</summary>
+
+### normal component
+
+```js
+const Foo = <div>foo</div>;
+render(Foo, document.getElementById("root"));
+```
+
+### Named component
+
+```js
+const Foo = <div>foo</div>;
+render(<Foo />, document.getElementById("root"));
+```
+
+### Functional component
+
+```js
+const Foo = () => {
+  return <div>foo</div>;
+};
+render(<Foo />, document.getElementById("root"));
+```
+
+### Functional component wrapping children
+
+```js
+const Foo = (props) => {
+  return <div>{props.children}</div>;
+};
+render(<Foo>bar</Foo>, document.getElementById("root"));
+```
+
+### Fragment
+
+```js
+const frag = () => {
+  return (
+    <Fragment>
+      <div>foo</div>
+      <div>bar</div>
+    </Fragment>
+  );
+};
+```
+
+</details>
+
+# 12 - Add Instance
+
+# 13 - diff
+
+
+# Support aria-? attributes
