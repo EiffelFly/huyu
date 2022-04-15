@@ -115,11 +115,16 @@ const Bar = () => {
         backgroundColor: "grey",
         color: "white",
       }}
-      onClick={() => {
-        console.log("hello");
-      }}
     >
-      <p style={{ margin: "0 auto", color: "honeydew" }}>Click me</p>
+      <p
+        onClick={() => {
+          console.log("hello");
+        }}
+        aria-hidden={true}
+        style={{ margin: "0 auto", color: "honeydew" }}
+      >
+        Click me
+      </p>
     </button>
   );
 };
