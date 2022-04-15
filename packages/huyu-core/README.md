@@ -763,7 +763,7 @@ export const createElement = (
 };
 ```
 
-<details>
+</details>
 
 # 9 - Support named functional component wrapping children
 
