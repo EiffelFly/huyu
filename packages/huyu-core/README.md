@@ -891,7 +891,7 @@ const updateDomAttribute = (dom: DOM, attributeName, attribute) => {
 
 </details>
 
-# 12 - Support aria-? and other attributes
+# 11 - Support aria-? and other attributes
 
 <details>
   <summary>Implementation details</summary>
@@ -967,7 +967,7 @@ const updateDom = (dom: DOM, props) => {
 
 </details>
 
-# 13 - Update nested children attributes
+# 12 - Update nested children attributes
 
 In previous section we can update first layer of DOM, but we can't update children's dom
 
@@ -992,7 +992,7 @@ const Bar = () => {
 
 We need to find a way to recursively update children
 
-# 14 - A playground test whole scenario
+# 13 - A playground test whole scenario
 
 <details>
   <summary>Implementation details</summary>
@@ -1044,6 +1044,6 @@ const frag = () => {
 
 </details>
 
-# 12 - Add Instance
+# 14 - Add Instance
 
-# 13 - diff
+# 15 - diff
