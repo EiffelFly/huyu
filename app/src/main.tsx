@@ -76,15 +76,81 @@ import { render, Fragment } from "@huyu/core";
 
 /** JSX - Named function component wrap children */
 
-const Foo = (props) => {
-  return <div>{props.children}</div>;
+// const Foo = (props) => {
+//   return <div>{props.children}</div>;
+// };
+
+// const Bar = (
+//   <Foo>
+//     <div>hi</div>
+//     <div>I am bar</div>
+//   </Foo>
+// );
+
+// render(<Bar />, document.getElementById("root"));
+
+/** JSX style */
+
+// const Foo = () => {
+//   return <div style={{ color: "blue" }}>hi</div>;
+// };
+
+// console.log(Foo, <Foo />);
+
+// render(<Foo />, document.getElementById("root"));
+
+/** JSX - style and event */
+
+const Bar = () => {
+  return (
+    <button
+      key="bar"
+      className="hi"
+      disabled={true}
+      style={{
+        width: "100px",
+        display: "flex",
+        padding: "12px",
+        backgroundColor: "grey",
+        color: "white",
+      }}
+      onClick={() => {
+        console.log("hello");
+      }}
+    >
+      <p>Click me</p>
+    </button>
+  );
 };
 
-const Bar = (
-  <Foo>
-    <div>hi</div>
-    <div>I am bar</div>
-  </Foo>
-);
-
 render(<Bar />, document.getElementById("root"));
+
+// const Bar = () => {
+//   return (
+//     <>
+//       <>
+//         <div>hi</div>
+//         <div>Oya</div>
+//       </>
+//       <>
+//         {[0, 1, 2, 3].map((e) => (
+//           <div>
+//             {[0, 1].map((e) => (
+//               <p>{`women-${e}`}</p>
+//             ))}
+//           </div>
+//         ))}
+//       </>
+//     </>
+//   );
+// };
+
+// const Foo = () => {
+//   return (
+//     <>
+//       <Bar />
+//     </>
+//   );
+// };
+
+// render(<Foo />, document.getElementById("root"));
