@@ -5,7 +5,6 @@ import { DOM, FC, HuyuElement, VDom, VNode } from "./type";
 export const render = (huyuElement: HuyuElement, ownerDom: DOM | null) => {
   let vDom = createVDom(huyuElement);
   let dom = createDom(vDom, ownerDom);
-  updateDom(dom, vDom.props);
   return dom;
 };
 
@@ -24,6 +23,10 @@ const createDom = (vDom: VDom, ownerDom: DOM) => {
     element = document.createElementNS("http://www.w3.org/2000/svg", vDom.type);
   } else {
     element = document.createElement(vDom.type as string);
+  }
+
+  if (vDom.type !== TEXT_ELEMENT) {
+    updateDom(element, vDom.props);
   }
 
   (vDom.props.children || []).forEach((child) => createDom(child, element));
