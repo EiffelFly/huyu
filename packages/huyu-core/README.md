@@ -952,7 +952,8 @@ const updateDom = (dom: DOM, props) => {
     } else if (key === "style") {
       updateDomStyle(dom, value);
     } else {
-      if (key === "key" || key === "ref") { // <---- we add this line
+      if (key === "key" || key === "ref") {
+        // <---- we add this line
         continue;
       }
       updateDomAttribute(dom, key, value);
@@ -968,6 +969,9 @@ const updateDom = (dom: DOM, props) => {
 </details>
 
 # 12 - Update nested children attributes
+
+<details>
+  <summary>Implementation details</summary>
 
 In previous section we can update first layer of DOM, but we can't update children's dom
 
@@ -990,7 +994,54 @@ const Bar = () => {
 };
 ```
 
-We need to find a way to recursively update children
+The reason is quite simple, at previous section, in order to simplify the code flow, we put updateDOM out of recursive loop
+
+```js
+export const render = (huyuElement: HuyuElement, ownerDom: DOM | null) => {
+  let vDom = createVDom(huyuElement);
+  let dom = createDom(vDom, ownerDom); // <-- this is where the recursive loop occured
+  updateDom(dom, vDom.props);
+  return dom;
+};
+```
+
+We have to bring it back to recursive loop
+
+```js
+const createDom = (vDom: VDom, ownerDom: DOM) => {
+  if (Array.isArray(vDom)) {
+    return vDom.map((d) => createDom(d, ownerDom));
+  }
+
+  let element: HTMLElement | Text | SVGSVGElement;
+
+  if (vDom.type === TEXT_ELEMENT) {
+    element = document.createTextNode(
+      (vDom as VNode<{ nodeValue: string }>).props.nodeValue
+    );
+  } else if (vDom.type === SVG_ELEMENT) {
+    element = document.createElementNS("http://www.w3.org/2000/svg", vDom.type);
+  } else {
+    element = document.createElement(vDom.type as string);
+  }
+
+  if (vDom.type !== TEXT_ELEMENT) {
+    updateDom(element, vDom.props);
+  }
+
+  (vDom.props.children || []).forEach((child) => createDom(child, element));
+
+  if (!ownerDom) {
+    return element;
+  } else {
+    return ownerDom.appendChild(element);
+  }
+};
+```
+
+Everything is working properly now.
+
+</details>
 
 # 13 - A playground test whole scenario
 
