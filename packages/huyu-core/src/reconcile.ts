@@ -37,13 +37,15 @@ const createDom = (vDom: VDom, ownerDom: DOM) => {
 
 const updateDom = (dom: DOM, props) => {
   for (const [key, value] of Object.entries(props)) {
-    console.log(key);
     if (key === "children") {
     } else if (key.startsWith("on")) {
       updateDomEvent(dom, key, value);
     } else if (key === "style") {
       updateDomStyle(dom, value);
     } else {
+      if (key === "key" || key === "ref") {
+        continue;
+      }
       updateDomAttribute(dom, key, value);
     }
   }
@@ -59,8 +61,8 @@ const updateDomEvent = (dom: DOM, eventName: string, event) => {
   dom.addEventListener(eventName.toLowerCase().substring(2), event);
 };
 
-const updateDomAttribute = (dom: DOM, attributeName, attribute) => {
-  dom[attributeName] = attribute;
+const updateDomAttribute = (dom: DOM, key, value) => {
+  (dom as SVGSVGElement | HTMLElement).setAttribute(key, value);
 };
 
 // const isEvent = (key: string) => key.startsWith("on");
