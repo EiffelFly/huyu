@@ -106,6 +106,7 @@ const Bar = () => {
     <button
       key="bar"
       className="hi"
+      aria-label="foo"
       disabled={true}
       style={{
         width: "100px",
@@ -118,7 +119,7 @@ const Bar = () => {
         console.log("hello");
       }}
     >
-      <p>Click me</p>
+      <p style={{ margin: "0 auto", color: "honeydew" }}>Click me</p>
     </button>
   );
 };
