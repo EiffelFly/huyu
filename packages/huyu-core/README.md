@@ -891,7 +891,7 @@ const updateDomAttribute = (dom: DOM, attributeName, attribute) => {
 
 </details>
 
-# 12 - Support aria-? attributes
+# 12 - Support aria-? and other attributes
 
 <details>
   <summary>Implementation details</summary>
