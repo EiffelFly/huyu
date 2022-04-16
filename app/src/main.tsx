@@ -1,106 +1,5 @@
 import { render, Fragment } from "@huyu/core";
 
-/* The old way to generate element and related dom object */
-
-// const hi = createElement("div", {}, "hi");
-// const iAm = createElement("div", {}, "I am");
-// const headerContainer = createElement("h1", {}, iAm, hi);
-// render(headerContainer, document.getElementById("root"));
-
-/* JSX - normal component */
-
-// const test = (
-//   <div>
-//     <div>test</div>
-//   </div>
-// );
-
-// render(test, document.getElementById("root"));
-
-/** JSX - named component */
-
-// const Component = (
-//   <div>
-//     <span>component</span>
-//     <div>hi</div>
-//   </div>
-// );
-
-// render(<Component />, document.getElementById("root"));
-
-/** JSX - function component */
-
-// const Component = () => {
-//   return (
-//     <div>
-//       <span>hihi</span>
-//       <span>hi</span>
-//     </div>
-//   );
-// };
-
-// const Container = () => {
-//   return (
-//     <div>
-//       <Component />
-//     </div>
-//   );
-// };
-
-// render(<Container />, document.getElementById("root"));
-
-/** JSX - Fragment */
-
-// const Frag = (
-//   <Fragment>
-//     <div>hi</div>
-//     <div>I am array</div>
-//   </Fragment>
-// );
-
-// console.log(<Frag />);
-
-// render(<Frag />, document.getElementById("root"));
-
-/** JSX - Array children */
-
-// const Foo = (
-//   <div>
-//     {[0, 1].map((e) => (
-//       <p>{`hi-${e}`}</p>
-//     ))}
-//   </div>
-// );
-
-// render(Foo, document.getElementById("root"));
-
-/** JSX - Named function component wrap children */
-
-// const Foo = (props) => {
-//   return <div>{props.children}</div>;
-// };
-
-// const Bar = (
-//   <Foo>
-//     <div>hi</div>
-//     <div>I am bar</div>
-//   </Foo>
-// );
-
-// render(<Bar />, document.getElementById("root"));
-
-/** JSX style */
-
-// const Foo = () => {
-//   return <div style={{ color: "blue" }}>hi</div>;
-// };
-
-// console.log(Foo, <Foo />);
-
-// render(<Foo />, document.getElementById("root"));
-
-/** JSX - style and event */
-
 const Button = () => {
   return (
     <button
@@ -138,11 +37,50 @@ const InputField = () => {
   );
 };
 
+const TextArea = () => {
+  return <textarea rows={5} style={{ border: "1px solid grey" }} />;
+};
+
 const Text = () => {
   return (
     <div>
       <InputField />
       <Button />
+    </div>
+  );
+};
+
+const WeirdArray = () => {
+  return (
+    <>
+      {[
+        <>
+          <h1>hi</h1>
+          <>
+            <p>yes!</p>
+          </>
+        </>,
+      ]}
+    </>
+  );
+};
+
+const NestedArray = () => {
+  return (
+    <div>
+      {[
+        <p>foo</p>,
+        <p>bar</p>,
+        [
+          <p>baaa</p>,
+          [
+            <p>shit</p>,
+            <>
+              <p>hi nested</p>
+            </>,
+          ],
+        ],
+      ]}
     </div>
   );
 };
@@ -154,10 +92,18 @@ const Container = () => {
     <>
       <div style={{ marginBottom: "20px" }}>
         <h1>hi, this is huyu</h1>
+        <h2>hi, I am header 2</h2>
+        <h3>hi, I am header 3</h3>
+        <h4>hi, I am header 4</h4>
+        <h5>hi, I am header 5</h5>s
       </div>
       <div>
         <InputField />
+        <TextArea />
         <Button />
+      </div>
+      <div>
+        <a href="https://github.com/EiffelFly/huyu">huyu</a>
       </div>
       <>
         {[0, 1, 2, 3].map((e) => (
@@ -168,8 +114,16 @@ const Container = () => {
           </div>
         ))}
       </>
+      <>
+        <>
+          <NestedArray />
+        </>
+        <>
+          <WeirdArray />
+        </>
+      </>
     </>
   );
 };
 
-render(<Text />, document.getElementById("root"));
+render(<Container />, document.getElementById("root"));
