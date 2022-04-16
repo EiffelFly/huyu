@@ -8,7 +8,7 @@ esbuild
     entryPoints: ["./src/index.ts"],
     outfile: "build/index.js",
     bundle: true,
-    minify: true,
+    minify: false,
     format: "esm",
     sourcemap: true,
     target: "esnext",
