@@ -1123,7 +1123,7 @@ export const createVDom = (element: HuyuElement) => {
 
 </details>
 
-# 13 - A playground test whole scenario
+# 14 - A playground test whole scenario
 
 <details>
   <summary>Implementation details</summary>
@@ -1170,6 +1170,44 @@ const frag = () => {
       <div>bar</div>
     </Fragment>
   );
+};
+```
+
+### named component wrap functional component
+
+```js
+const Foo = () => {
+  return (
+    <div>
+      <InputField />
+      <Button />
+    </div>
+  );
+};
+```
+
+### array structure
+
+```js
+const WeirdArray = () => {
+  return (
+    <>
+      {[
+        <>
+          <h1>hi</h1>
+          <>
+            <p>yes!</p>
+          </>
+        </>,
+      ]}
+    </>
+  );
+};
+```
+
+```js
+const NestedArray = () => {
+  return <div>{[<p>foo</p>, <p>bar</p>, [<p>baaa</p>, [<p>shit</p>]]]}</div>;
 };
 ```
 
