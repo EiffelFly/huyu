@@ -101,12 +101,11 @@ import { render, Fragment } from "@huyu/core";
 
 /** JSX - style and event */
 
-const Bar = () => {
+const Button = () => {
   return (
     <button
-      key="bar"
+      key="button"
       className="hi"
-      aria-label="foo"
       disabled={true}
       style={{
         width: "100px",
@@ -123,40 +122,54 @@ const Bar = () => {
         aria-hidden={true}
         style={{ margin: "0 auto", color: "honeydew" }}
       >
-        Click me
+        Click mes
       </p>
     </button>
   );
 };
 
-render(<Bar />, document.getElementById("root"));
+const InputField = () => {
+  return (
+    <input
+      key="input-field-a"
+      type="text"
+      style={{ border: "1px solid black", marginBottom: "20px" }}
+    />
+  );
+};
 
-// const Bar = () => {
-//   return (
-//     <>
-//       <>
-//         <div>hi</div>
-//         <div>Oya</div>
-//       </>
-//       <>
-//         {[0, 1, 2, 3].map((e) => (
-//           <div>
-//             {[0, 1].map((e) => (
-//               <p>{`women-${e}`}</p>
-//             ))}
-//           </div>
-//         ))}
-//       </>
-//     </>
-//   );
-// };
+const Text = () => {
+  return (
+    <div>
+      <InputField />
+      <Button />
+    </div>
+  );
+};
 
-// const Foo = () => {
-//   return (
-//     <>
-//       <Bar />
-//     </>
-//   );
-// };
+console.log(<Text />);
 
-// render(<Foo />, document.getElementById("root"));
+const Container = () => {
+  return (
+    <>
+      <div style={{ marginBottom: "20px" }}>
+        <h1>hi, this is huyu</h1>
+      </div>
+      <div>
+        <InputField />
+        <Button />
+      </div>
+      <>
+        {[0, 1, 2, 3].map((e) => (
+          <div>
+            {[0, 1].map((e) => (
+              <p>{`hi-${e}`}</p>
+            ))}
+          </div>
+        ))}
+      </>
+    </>
+  );
+};
+
+render(<Text />, document.getElementById("root"));
