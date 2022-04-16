@@ -1041,6 +1041,86 @@ const createDom = (vDom: VDom, ownerDom: DOM) => {
 
 Everything is working properly now.
 
+# 13 - Render non-fragment wrapped function components
+
+<details>
+  <summary>Implementation details</summary>
+
+This is how we render vDom
+
+```js
+export const createVDom = (element: HuyuElement) => {
+  if (typeof element.type === "string") {
+    console.log("isStr", element);
+    return element;
+  }
+
+  if (Array.isArray(element)) {
+    console.log("isArr", element);
+    return element.map(createVDom);
+  }
+
+  if (element.type instanceof Function) {
+    console.log("isFunc", element);
+    return createVDom(element.type(element.props));
+  }
+
+  if (element.type instanceof Object) {
+    console.log("isObj", element);
+    return createVDom(element.type);
+  }
+};
+```
+
+It can process something like this, the process will be:
+
+1. This is a function -> run function
+2. Encounter Fragment -> this is a function -> run function
+3. Return children is array -> render each child
+
+```js
+const Text = () => {
+  return (
+    <>
+      <InputField />
+      <Button />
+    </>
+  );
+};
+```
+
+But it can't process something like this, the process will be:
+
+1. This is a function -> run function
+2. Encounter valid string type -> return element
+
+So we leave these two child as function component, we forgot to render vDom for them
+
+```js
+const Text = () => {
+  return (
+    <div>
+      <InputField />
+      <Button />
+    </div>
+  );
+};
+```
+
+We have to process these children too
+
+```js
+export const createVDom = (element: HuyuElement) => {
+  if (typeof element.type === "string") {
+    if (element.props.children.length > 0) {
+      element.props.children = element.props.children.map(createVDom);
+    }
+    return element;
+  }
+  // <-- snip -->
+};
+```
+
 </details>
 
 # 13 - A playground test whole scenario
