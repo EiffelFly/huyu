@@ -40,18 +40,25 @@ export const createElement = (
 
 export const createVDom = (element: HuyuElement) => {
   if (typeof element.type === "string") {
+    // console.log("isStr", element);
+    if (element.props.children.length > 0) {
+      element.props.children = element.props.children.map(createVDom);
+    }
     return element;
   }
 
   if (Array.isArray(element)) {
+    // console.log("isArr", element);
     return element.map(createVDom);
   }
 
   if (element.type instanceof Function) {
+    // console.log("isFunc", element);
     return createVDom(element.type(element.props));
   }
 
   if (element.type instanceof Object) {
+    // console.log("isObj", element);
     return createVDom(element.type);
   }
 };
