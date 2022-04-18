@@ -65,3 +65,13 @@ export interface VNode<P = {}> {
 }
 
 export type DOM = HTMLElement | Text | SVGSVGElement;
+
+export type HuyuInstance = {
+  /** Current instance's dom */
+  dom: HTMLElement[] | HTMLElement;
+
+  /** Current instance's vDom */
+  vDom: VDom;
+
+  childrenInstance: HuyuInstance[];
+};
