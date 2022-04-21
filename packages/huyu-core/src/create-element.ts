@@ -49,7 +49,7 @@ export const createVDom = (element: HuyuElement) => {
 
   if (Array.isArray(element)) {
     // console.log("isArr", element);
-    return element.map(createVDom);
+    return element.map(createVDom).flat();
   }
 
   if (element.type instanceof Function) {
