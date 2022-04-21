@@ -1,32 +1,27 @@
-import { SVG_ELEMENT, TEXT_ELEMENT } from "./constant";
+import { SVG_ELEMENT, TEXT_ELEMENT, __DEV__ } from "./constant";
 import { createVDom } from "./create-element";
-import { DOM, FC, HuyuElement, HuyuInstance, VDom, VNode } from "./type";
+import { DOM, HuyuElement, HuyuInstance, VDom, VNode } from "./type";
 
 let rootInstance = null;
+let route = [];
+
+/**
+ * Todo:
+ *
+ * - Make sure HuyuInstance.dom is HTMLElement not HTMLElement[]
+ */
 
 export const render = (huyuElement: HuyuElement, ownerDom: DOM | null) => {
   let vDom;
   if (huyuElement) {
     vDom = createVDom(huyuElement);
   }
-  // console.log("root-instance", rootInstance);
+
   const newInstance = reconcilie(ownerDom, rootInstance, vDom ? vDom : null);
   rootInstance = newInstance;
-};
 
-const reconcileV2 = (
-  ownerDom: Node | DOM | null,
-  currentInstance: HuyuInstance | HuyuInstance[],
-  nextVDom: VDom
-) => {
-  const newInstance = createInstance(nextVDom, null);
-
-  if (Array.isArray(currentInstance)) {
-    let index = 0;
-    const maxLength = Math.max(currentInstance.length, newInstance.length);
-
-    while (index < maxLength) {}
-  } else {
+  if (__DEV__) {
+    console.log(route);
   }
 };
 
@@ -35,20 +30,44 @@ const reconcilie = (
   currentInstance: HuyuInstance | HuyuInstance[],
   nextVDom: VDom
 ) => {
-  // console.log("reconcile begin", ownerDom, currentInstance, nextVDom);
-
   if (Array.isArray(currentInstance)) {
-    console.log("currentInstance is array", nextVDom);
+    if (!nextVDom) {
+      if (__DEV__) {
+        console.log(
+          "0 - currentInstance is array, nextVDom is null, delete all old elements",
+          currentInstance,
+          nextVDom
+        );
+        route.push(0);
+      }
 
-    if (Array.isArray(nextVDom)) {
+      for (const instance of currentInstance) {
+        const targetDom = instance.dom;
+
+        if (Array.isArray(targetDom)) {
+          for (const dom of targetDom) {
+            ownerDom.removeChild(dom);
+          }
+        } else {
+          ownerDom.removeChild(targetDom);
+        }
+      }
+    } else if (Array.isArray(nextVDom)) {
       let index = 0;
       let newInstnace = [];
       const maxLength = Math.max(currentInstance.length, nextVDom.length);
 
       while (index < maxLength) {
-        // console.log(index, currentInstance[index], nextVDom[index])
-
         if (!currentInstance[index] && nextVDom[index]) {
+          if (__DEV__) {
+            console.log(
+              "1 - currentInstance and nextVDom are array, currentInstance[index] not exist, create and append new instance",
+              currentInstance[index],
+              nextVDom[index]
+            );
+            route.push(1);
+          }
+
           const instance = createInstance(nextVDom, null);
           ownerDom.appendChild(instance.dom);
           newInstnace.push(instance);
@@ -57,16 +76,50 @@ const reconcilie = (
         }
 
         if (currentInstance[index] && !nextVDom[index]) {
-          console.log("delete old dom");
-          if (Array.isArray(currentInstance[index].dom)) {
-            for (const node of currentInstance[index].dom as HTMLElement[]) {
-              ownerDom.removeChild(node);
+          if (__DEV__) {
+            console.log(
+              "2 - currentInstance and nextVDom are array, nextVDom[index] not exist, delete the old dom element",
+              currentInstance[index],
+              nextVDom[index]
+            );
+            route.push(2);
+          }
+
+          const targetInstance = currentInstance[index];
+
+          if (Array.isArray(targetInstance)) {
+            for (const instance of targetInstance) {
+              const targetDom = instance.dom;
+              if (Array.isArray(targetDom)) {
+                for (const node of targetDom) {
+                  ownerDom.removeChild(node);
+                }
+              } else {
+                ownerDom.removeChild(targetDom);
+              }
             }
           } else {
-            ownerDom.removeChild(currentInstance[index].dom as HTMLElement);
+            const targetDom = targetInstance.dom;
+            if (Array.isArray(targetDom)) {
+              for (const node of targetDom) {
+                ownerDom.removeChild(node);
+              }
+            } else {
+              ownerDom.removeChild(targetDom);
+            }
           }
+
           index++;
           continue;
+        }
+
+        if (__DEV__) {
+          console.log(
+            "3 - currentInstance and nextVDom are array, currentInstance and nextVDom both exist, reconcile",
+            currentInstance[index],
+            nextVDom[index]
+          );
+          route.push(3);
         }
 
         const instance = reconcilie(
@@ -80,40 +133,57 @@ const reconcilie = (
       }
       return newInstnace;
     } else {
+      if (__DEV__) {
+        console.log(
+          "4 - currentInstance is array, reconcile first element and delete old element",
+          currentInstance,
+          nextVDom
+        );
+        route.push(4);
+      }
+
       const newInstance = reconcilie(ownerDom, currentInstance[0], nextVDom);
 
       let index = 1;
 
       while (index < currentInstance.length) {
-        if (Array.isArray(currentInstance[index].dom)) {
-          for (const node of currentInstance[index].dom as HTMLElement[]) {
+        const targetDom = currentInstance[index].dom;
+        if (Array.isArray(targetDom)) {
+          for (const node of targetDom) {
             ownerDom.removeChild(node);
           }
         } else {
-          ownerDom.removeChild(currentInstance[index].dom as HTMLElement);
+          ownerDom.removeChild(targetDom);
         }
+
         index++;
       }
       return newInstance;
     }
   } else {
     if (!currentInstance) {
+      if (__DEV__) {
+        console.log(
+          "5 - currentInstance is null, create new instance",
+          currentInstance,
+          nextVDom
+        );
+        route.push(5);
+      }
+
       if (Array.isArray(nextVDom) && nextVDom.length === 0) {
-        console.log("early return");
+        console.log("6 - nextVdom is null too, early return");
+        route.push(6);
         return null;
       } else {
         if (!nextVDom) {
-          console.log("early return");
+          console.log("6 - nextVdom is null too, early return");
+          route.push(6);
           return null;
         }
       }
 
-      /** We need to create a new instance */
-      console.log("create brand new instance");
-
       const instance = createInstance(nextVDom, null);
-
-      console.log(instance);
 
       if (Array.isArray(instance)) {
         for (let i = 0; i < instance.length; i++) {
@@ -125,8 +195,14 @@ const reconcilie = (
 
       return instance;
     } else if (!nextVDom) {
-      /** If next vDom is null we have to remove the dom */
-      console.log("remove instance");
+      if (__DEV__) {
+        console.log(
+          "7 - nextVdom is null, delete all instance",
+          currentInstance,
+          nextVDom
+        );
+        route.push(7);
+      }
 
       if (Array.isArray(currentInstance.dom)) {
         for (const node of currentInstance.dom) {
@@ -142,164 +218,88 @@ const reconcilie = (
         childrenInstance: null,
       };
     } else if (Array.isArray(nextVDom)) {
-      /** Our vDom can be a array, we need to compare every type of the item in the array and
-       * reconcile their children
-       */
+      /** reconcile first element than create new instance afterward may be more performant */
 
-      if (
-        Array.isArray(currentInstance.dom) ||
-        currentInstance.dom instanceof NodeList
-      ) {
-        console.log("many-to-many", currentInstance.dom, nextVDom);
-
-        let index = 0;
-        let instances = [];
-
-        const maxIndex = Math.max(currentInstance.dom.length, nextVDom.length);
-
-        while (index < maxIndex) {
-          if (!currentInstance.vDom[index] && nextVDom[index]) {
-            const instance = createInstance(nextVDom[index], null);
-            ownerDom.appendChild(instance.dom);
-            instances.push(instance);
-            index++;
-            continue;
-          }
-
-          if (currentInstance.vDom[index] && !nextVDom[index]) {
-            ownerDom.removeChild(currentInstance.dom[index]);
-            index++;
-            continue;
-          }
-
-          if (currentInstance.vDom[index].type !== nextVDom[index].type) {
-            const instance = createInstance(nextVDom[index], null);
-            ownerDom.replaceChild(instance.dom, currentInstance.dom[index]);
-            instances.push(instance);
-            index++;
-          } else {
-            console.log("reconcile children", currentInstance);
-            const newChildrenInstance = reconcilie(
-              currentInstance.dom[index],
-              currentInstance.childrenInstance[index],
-              nextVDom[index].props.children
-            );
-
-            instances.push({
-              dom: currentInstance.dom[index],
-              vDom: nextVDom[index],
-              childrenInstance: newChildrenInstance,
-            });
-          }
-        }
-        return instances;
-      } else {
-        console.log("one-to-many");
-
-        let index = 0;
-        let instances = [];
-
-        ownerDom.removeChild(currentInstance.dom);
-
-        while (index < nextVDom.length) {
-          const instance = createInstance(nextVDom[index], null);
-          ownerDom.appendChild(instance.dom);
-          instances.push(instance);
-          index++;
-        }
-
-        return instances;
+      if (__DEV__) {
+        console.log(
+          "8 - currentInstance is object, nextVdom is array, remove all old dom and create new instance",
+          currentInstance,
+          nextVDom
+        );
+        route.push(8);
       }
-    } else {
-      if (
-        Array.isArray(currentInstance.dom) ||
-        currentInstance.dom instanceof NodeList
-      ) {
-        console.log("many-to-one", currentInstance, nextVDom);
 
-        let index = 0;
-        /** Remove old dom */
-        while (index < currentInstance.dom.length) {
-          ownerDom.removeChild(currentInstance.dom[index]);
-          index++;
-        }
+      let index = 0;
+      let instances = [];
 
-        const instance = createInstance(nextVDom, null);
+      ownerDom.removeChild(currentInstance.dom as HTMLElement);
+
+      while (index < nextVDom.length) {
+        const instance = createInstance(nextVDom[index], null);
         ownerDom.appendChild(instance.dom);
-        return instance;
-      } else {
-        if ((currentInstance.vDom as VNode).type === nextVDom.type) {
+        instances.push(instance);
+        index++;
+      }
+
+      return instances;
+    } else {
+      if ((currentInstance.vDom as VNode).type === nextVDom.type) {
+        if (__DEV__) {
           console.log(
-            "one-to-one same-type reconcile children",
+            "9 - currentInstance and nextVdom are object, same type, reconcile",
             currentInstance,
             nextVDom
           );
-
-          const newChildrenInstance = reconcilie(
-            currentInstance.dom,
-            currentInstance.childrenInstance,
-            nextVDom.props.children
-          );
-
-          if (nextVDom.type === TEXT_ELEMENT) {
-            if (
-              (currentInstance.vDom as VNode<{ nodeValue: string }>).props
-                .nodeValue !==
-              (nextVDom as VNode<{ nodeValue: string }>).props.nodeValue
-            ) {
-              currentInstance.dom.nodeValue = (
-                nextVDom as VNode<{ nodeValue: string }>
-              ).props.nodeValue;
-            }
-          } else {
-            updateDom(currentInstance.dom, nextVDom.props);
-          }
-
-          return {
-            dom: currentInstance.dom,
-            vDom: nextVDom,
-            childrenInstance: newChildrenInstance,
-          };
-        } else {
-          console.log("one-to-one different-type reconcile");
-          const instance = createInstance(nextVDom, null);
-
-          console.log(instance, currentInstance);
-
-          ownerDom.replaceChild(instance.dom, currentInstance.dom);
-          return instance;
+          route.push(9);
         }
+
+        const newChildrenInstance = reconcilie(
+          currentInstance.dom as HTMLElement,
+          currentInstance.childrenInstance,
+          nextVDom.props.children
+        );
+
+        if (nextVDom.type === TEXT_ELEMENT) {
+          if (
+            (currentInstance.vDom as VNode<{ nodeValue: string }>).props
+              .nodeValue !==
+            (nextVDom as VNode<{ nodeValue: string }>).props.nodeValue
+          ) {
+            (currentInstance.dom as HTMLElement).nodeValue = (
+              nextVDom as VNode<{ nodeValue: string }>
+            ).props.nodeValue;
+          }
+        } else {
+          updateDom(currentInstance.dom as HTMLElement, nextVDom.props);
+        }
+
+        return {
+          dom: currentInstance.dom,
+          vDom: nextVDom,
+          childrenInstance: newChildrenInstance,
+        };
+      } else {
+        if (__DEV__) {
+          console.log(
+            "10 - currentInstance and nextVdom are object, different type, delete old dom element and create new instance",
+            currentInstance,
+            nextVDom
+          );
+          route.push(10);
+        }
+
+        const instance = createInstance(nextVDom, null);
+
+        ownerDom.replaceChild(instance.dom, currentInstance.dom as HTMLElement);
+        return instance;
       }
     }
   }
 };
 
-// const reconcilieChildren = (
-//   ownerDom: Node | DOM | null,
-//   childInstance: HuyuInstance,
-//   childNextVDom: VNode[]
-// ) => {
-//   let index = 0;
-//   let newChildrenInstance = [];
-
-//   while (index < maxLength) {
-//     const newInstance = reconcilie(
-//       ownerDom,
-//       childInstance[index],
-//       childNextVDom[index]
-//     );
-//     newChildrenInstance.push(newInstance);
-//     index++;
-//   }
-
-//   const newInstance = reconcilie(ownerDom, childInstance, childNextVDom);
-
-//   return newChildrenInstance;
-// };
-
 const createInstance = (vDom: VDom, ownerDom: DOM) => {
   if (Array.isArray(vDom)) {
-    return vDom.map((d) => createInstance(d, ownerDom)).flat();
+    return vDom.map((d) => createInstance(d, ownerDom));
   }
 
   let element: HTMLElement | Text | SVGSVGElement;
@@ -308,7 +308,6 @@ const createInstance = (vDom: VDom, ownerDom: DOM) => {
     element = document.createTextNode(
       (vDom as VNode<{ nodeValue: string }>).props.nodeValue
     );
-    console.log(element)
   } else if (vDom.type === SVG_ELEMENT) {
     element = document.createElementNS("http://www.w3.org/2000/svg", vDom.type);
   } else {
@@ -341,7 +340,7 @@ const createInstance = (vDom: VDom, ownerDom: DOM) => {
   return {
     dom: element,
     vDom: vDom,
-    childrenInstance: childrenInstance.flat(),
+    childrenInstance: childrenInstance,
   };
 };
 
