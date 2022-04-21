@@ -65,65 +65,86 @@ const WeirdArray = () => {
   );
 };
 
-const NestedArray = () => {
+// const NestedArray = () => {
+//   return (
+//     <div>
+//       {[
+//         <p>foo</p>,
+//         <p>bar</p>,
+//         [
+//           <p>baaa</p>,
+//           [
+//             <p>shit</p>,
+//             <>
+//               <p>hi nested</p>
+//             </>,
+//           ],
+//         ],
+//       ]}
+//     </div>
+//   );
+// };
+
+// console.log(<Text />);
+
+// const Container = () => {
+//   return (
+//     <>
+//       <div style={{ marginBottom: "20px" }}>
+//         <h1>hi, this is huyu</h1>
+//         <h2>hi, I am header 2</h2>
+//         <h3>hi, I am header 3</h3>
+//         <h4>hi, I am header 4</h4>
+//         <h5>hi, I am header 5</h5>s
+//       </div>
+//       <div>
+//         <InputField />
+//         <TextArea />
+//         <Button />
+//       </div>
+//       <div>
+//         <a href="https://github.com/EiffelFly/huyu">huyu</a>
+//       </div>
+//       <>
+//         {[0, 1, 2, 3].map((e) => (
+//           <div>
+//             {[0, 1].map((e) => (
+//               <p>{`hi-${e}`}</p>
+//             ))}
+//           </div>
+//         ))}
+//       </>
+//       <>
+//         <>
+//           <NestedArray />
+//         </>
+//         <>
+//           <WeirdArray />
+//         </>
+//       </>
+//     </>
+//   );
+// };
+
+const Foo = () => {
   return (
     <div>
-      {[
-        <p>foo</p>,
-        <p>bar</p>,
-        [
-          <p>baaa</p>,
-          [
-            <p>shit</p>,
-            <>
-              <p>hi nested</p>
-            </>,
-          ],
-        ],
-      ]}
+      <p>hi</p>
+      <p>yo</p>
+      <WeirdArray />
     </div>
   );
 };
 
-console.log(<Text />);
+render(<Foo />, document.getElementById("root"));
 
-const Container = () => {
+const Bar = () => {
   return (
-    <>
-      <div style={{ marginBottom: "20px" }}>
-        <h1>hi, this is huyu</h1>
-        <h2>hi, I am header 2</h2>
-        <h3>hi, I am header 3</h3>
-        <h4>hi, I am header 4</h4>
-        <h5>hi, I am header 5</h5>s
-      </div>
-      <div>
-        <InputField />
-        <TextArea />
-        <Button />
-      </div>
-      <div>
-        <a href="https://github.com/EiffelFly/huyu">huyu</a>
-      </div>
-      <>
-        {[0, 1, 2, 3].map((e) => (
-          <div>
-            {[0, 1].map((e) => (
-              <p>{`hi-${e}`}</p>
-            ))}
-          </div>
-        ))}
-      </>
-      <>
-        <>
-          <NestedArray />
-        </>
-        <>
-          <WeirdArray />
-        </>
-      </>
-    </>
+    <div>
+      <Text />
+      <WeirdArray />
+    </div>
   );
 };
 
-render(<Container />, document.getElementById("root"));
+render(<Bar />, document.getElementById("root"));
