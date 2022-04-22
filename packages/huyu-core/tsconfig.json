@@ -16,6 +16,7 @@
     "sourceMap": true,
     "outDir": "build",
     "emitDeclarationOnly": true, // Don't generate js file, we use rollup to do that
+    "jsx": "preserve",
 
     // To specific JSX related function
     "jsxFactory": "h",
