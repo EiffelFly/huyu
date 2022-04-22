@@ -1123,7 +1123,7 @@ export const createVDom = (element: HuyuElement) => {
 
 </details>
 
-# 14 - A playground test whole scenario
+# 14 - Add a playground that test whole scenario
 
 <details>
   <summary>Implementation details</summary>
@@ -1213,6 +1213,197 @@ const NestedArray = () => {
 
 </details>
 
-# 14 - Add Instance
+# 14 - Add Instance and diff(reconciliation)
 
-# 15 - diff
+When we activate two render, our program will create two dom which is not what we want.
+
+we need a place to memorize the full vDom, compare prevVDom and newVDom and update dom accordingly.
+
+React had a noun for it - Reconciliation, what we will implement here is a simple version of it.
+
+```js
+export type HuyuInstance = {
+  /** Current instance's dom */
+  dom: HTMLElement[] | HTMLElement,
+
+  /** Current instance's vDom */
+  vDom: VDom,
+
+  childrenInstance: HuyuInstance[],
+};
+```
+
+- Every element is at the same order. dom[0] is matching vDom[0] and childInstance[0]
+- This is a top-down approach, which means we will compare the whole tree from top to bottom.
+- If the parent's type doesn't change, we will leave parent as it is, update attribute and reconcile the children and update the props.
+- If the preVDom is single and nextVDom is array, we will replace all the node to avoid situation like below, we don't reconcile their tag one by one, although these two vDom have the same tag at the first element, they are referring to different structure, vice versa.
+
+```js
+const Foo = () => {
+  return (
+    <div>
+      <p>hi</p>
+      <p>change</p>
+    </div>
+  );
+};
+
+render(<Foo />, document.getElementById("root"));
+
+const Bar = () => {
+  return (
+    <>
+      <div>hi2</div>
+      <div>change 2</div>
+    </>
+  );
+};
+
+render(<Bar />, document.getElementById("root"));
+```
+
+- For now, if the prev instance is different from new instance, we will replace the entire prev instance with new instance.
+- children's instance will be stored at childInstance
+- Each item of instance can be array
+- Evaluate child instance when we need it
+- Will childInstance have parent?
+
+## Drawbacks
+
+- We create childInstance when initialize, which cost a lot
+- We have to check whether input is array or not, this make code hard to maintain
+
+## Notable issues
+
+- If we flat at createInstance something wrong will happen when we reconcile, the old instance is flat, but the new vDom is not flat.
+
+# 15 - Setup test environment to check sanity of reconcile algorithm
+
+- We use babel, jest to test.
+
+### Install necessary package
+
+`yarn add -D jest bable-jest @types/jest @babel/core @babel/plugin-transform-react-jsx @babel/preset-env @babel/preset-typescript @testing-library/jest-dom`
+
+### Add. jest.config.js
+
+```js
+/** @type {import('@jest/types').Config.InitialOptions} */
+module.exports = {
+  coverageDirectory: "coverage",
+  testEnvironment: "jsdom",
+  transform: {
+    "\\.[jt]sx?$": "babel-jest",
+  },
+  setupFilesAfterEnv: ["<rootDir>/jest-setup.ts"],
+};
+```
+
+### Add jest-setup.js to import @testing-library/dom
+
+```js
+// jest-setup.js
+import "@testing-library/jest-dom";
+```
+
+### Add babel.config.js
+
+```js
+module.exports = {
+  presets: [
+    ["@babel/preset-env", { targets: { node: "current" } }],
+    ["@babel/preset-typescript"],
+  ],
+};
+```
+
+### Add @babel/plugin-transform-react-jsx to transform jsx
+
+```js
+// babel.config.js
+module.exports = {
+  presets: [
+    ["@babel/preset-env", { targets: { node: "current" } }],
+    ["@babel/preset-typescript", { jsxPragma: "_jsx" }],
+  ],
+  plugins: [
+    [
+      "@babel/plugin-transform-react-jsx",
+      {
+        runtime: "classic", // defaults to classic
+      },
+    ],
+  ],
+};
+```
+
+You have two choices
+
+1. Use comment
+
+```js
+//import { createElement } from "../src";
+import { render } from "../src/reconcile";
+import { _jsx, _jsxFragment } from "../src";
+
+/** @jsx _jsx */
+test("should render simple functional component", () => {
+  const Hello = () => {
+    return <div>hello</div>;
+  };
+
+  console.log(<Hello />);
+
+  const ownerDom = document.createElement("div");
+
+  render(<Hello />, ownerDom);
+});
+```
+
+2. Use pragma nad pragmaFrag options
+
+Caveat: you need to specific jsxPragma and jsxPragmaFrag in "@babel/preset-typescript" because babel think it is type and remove it
+
+- https://github.com/parcel-bundler/parcel/pull/5585
+- https://github.com/babel/babel/issues/12585
+
+```js
+module.exports = {
+  presets: [
+    ["@babel/preset-env", { targets: { node: "current" } }],
+    ["@babel/preset-typescript", { jsxPragma: "_jsx",  }],
+  ],
+  plugins: [
+    [
+      "@babel/plugin-transform-react-jsx",
+      {
+        runtime: "classic", // defaults to classic
+        pragma: "_jsx",
+        pragmaFrag: "_jsxFragment",
+      },
+    ],
+  ],
+};
+```
+
+In this way you could remove comment
+
+```js
+//import { createElement } from "../src";
+import { render } from "../src/reconcile";
+import { _jsx, _jsxFragment } from "../src";
+
+test("should render simple functional component", () => {
+  const Hello = () => {
+    return <div>hello</div>;
+  };
+
+  console.log(<Hello />);
+
+  const ownerDom = document.createElement("div");
+
+  render(<Hello />, ownerDom);
+});
+```
+
+# 16 - fix naming conflict like `<input type="text" />`
