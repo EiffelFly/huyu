@@ -6,9 +6,24 @@ test("should render simple functional component", () => {
     return <div>hello</div>;
   };
 
-  const ownerDom = document.createElement("div");
+  render(<Hello />, document.body);
 
-  render(<Hello />, ownerDom);
+  expect(document.body.innerHTML).toBe("<div>hello</div>");
+});
 
-  expect(ownerDom.innerHTML).toBe("<div>hello</div>");
+test("should render function component props", () => {
+  const Button = () => {
+    return (
+      <button id="test" class="hi-button">
+        Click me
+      </button>
+    );
+  };
+
+  render(<Button />, document.body);
+
+  const target = document.body.querySelector("#test");
+
+  expect(target.id).toBe("test");
+  expect(target).toHaveClass("hi-button");
 });
