@@ -9,6 +9,8 @@ let route = [];
  * Todo:
  *
  * - Make sure HuyuInstance.dom is HTMLElement not HTMLElement[]
+ * - updateDOM
+ * - setup apporiate test
  */
 
 export const render = (huyuElement: HuyuElement, ownerDom: DOM | null) => {
@@ -187,9 +189,11 @@ const reconcilie = (
 
       if (Array.isArray(instance)) {
         for (let i = 0; i < instance.length; i++) {
+          updateDom(instance[i].dom, instance[i].vDom.props);
           ownerDom.appendChild(instance[i].dom);
         }
       } else {
+        updateDom(instance.dom, instance.vDom.props);
         ownerDom.appendChild(instance.dom);
       }
 
@@ -236,6 +240,7 @@ const reconcilie = (
 
       while (index < nextVDom.length) {
         const instance = createInstance(nextVDom[index], null);
+        updateDom(instance.dom, instance.vDom.props);
         ownerDom.appendChild(instance.dom);
         instances.push(instance);
         index++;
@@ -289,7 +294,7 @@ const reconcilie = (
         }
 
         const instance = createInstance(nextVDom, null);
-
+        updateDom(instance.dom, instance.vDom.props);
         ownerDom.replaceChild(instance.dom, currentInstance.dom as HTMLElement);
         return instance;
       }
