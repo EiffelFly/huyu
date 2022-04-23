@@ -22,5 +22,6 @@
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment"
   },
-  "include": ["**/*.ts", "**/*.tsx", "./jest-setup.ts"]
+  "include": ["**/*.ts", "**/*.tsx", "./jest-setup.ts"],
+  "exclude": ["./__tests__"]
 }
