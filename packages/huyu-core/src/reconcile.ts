@@ -13,7 +13,15 @@ let route = [];
  * - setup apporiate test
  */
 
-export const render = (huyuElement: HuyuElement, ownerDom: DOM | null) => {
+type RenderOptions = {
+  forgetInstance?: boolean;
+};
+
+export const render = (
+  huyuElement: HuyuElement,
+  ownerDom: DOM | null,
+  options?: RenderOptions
+) => {
   let vDom;
   if (huyuElement) {
     vDom = createVDom(huyuElement);
@@ -21,6 +29,10 @@ export const render = (huyuElement: HuyuElement, ownerDom: DOM | null) => {
 
   const newInstance = reconcilie(ownerDom, rootInstance, vDom ? vDom : null);
   rootInstance = newInstance;
+
+  if (options?.forgetInstance) {
+    rootInstance = null;
+  }
 
   if (__DEV__) {
     console.log(route);
