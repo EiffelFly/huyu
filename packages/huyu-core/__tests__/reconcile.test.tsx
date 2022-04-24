@@ -1,5 +1,5 @@
 import { initializeInstance, render } from "../src/reconcile";
-import { _jsx, _jsxFragment } from "../src";
+import { _jsx, _jsxFragment  } from "../src";
 import { fireEvent } from "@testing-library/dom";
 
 const cleanup = () => {
@@ -15,7 +15,7 @@ test("should render simple functional component", () => {
   render(<Hello />, document.body, { forgetInstance: true });
 
   expect(document.body.innerHTML).toBe("<div>hello</div>");
-  cleanup()
+  cleanup();
 });
 
 test("should render function component props - id & class", () => {
@@ -33,7 +33,7 @@ test("should render function component props - id & class", () => {
 
   expect(target.id).toBe("test");
   expect(target).toHaveClass("hi-button");
-  cleanup()
+  cleanup();
 });
 
 test("should render function component prop - style", () => {
@@ -56,7 +56,7 @@ test("should render function component prop - style", () => {
     border: "solid 1px black",
     backgroundColor: "azure",
   });
-  cleanup()
+  cleanup();
 });
 
 test("should render function component prop - event", () => {
@@ -82,7 +82,7 @@ test("should render function component prop - event", () => {
   );
 
   expect(handleClick).toHaveBeenCalledTimes(1);
-  cleanup()
+  cleanup();
 });
 
 test("should do simple reconcile", () => {
@@ -95,7 +95,7 @@ test("should do simple reconcile", () => {
   render(<P />, document.body);
 
   expect(document.body.innerHTML).toBe("<p>hi2</p>");
-  cleanup()
+  cleanup();
 });
 
 test("should reconcile nested element", () => {
@@ -110,5 +110,21 @@ test("should reconcile nested element", () => {
   render(<Nested />, document.body);
   render(<Simple />, document.body);
   expect(document.body.innerHTML).toBe("<p>hi2</p>");
-  cleanup()
+  cleanup();
+
+  render(<Simple />, document.body);
+  render(<Nested />, document.body);
+  expect(document.body.innerHTML).toBe("<div><div>hi</div></div>");
+  cleanup();
+});
+
+test("should render fragment", () => {
+  const Test = () => (
+    <>
+      <div>hi</div>
+    </>
+  );
+  render(<Test />, document.body);
+  expect(document.body.innerHTML).toBe("<div>hi</div>");
+  cleanup();
 });
