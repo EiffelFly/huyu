@@ -17,6 +17,10 @@ type RenderOptions = {
   forgetInstance?: boolean;
 };
 
+export const initializeInstance = () => {
+  rootInstance = null;
+};
+
 export const render = (
   huyuElement: HuyuElement,
   ownerDom: DOM | null,

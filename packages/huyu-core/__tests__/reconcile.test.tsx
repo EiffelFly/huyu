@@ -1,6 +1,11 @@
-import { render } from "../src/reconcile";
+import { initializeInstance, render } from "../src/reconcile";
 import { _jsx, _jsxFragment } from "../src";
 import { fireEvent } from "@testing-library/dom";
+
+const cleanup = () => {
+  initializeInstance();
+  document.body.innerHTML = "";
+};
 
 test("should render simple functional component", () => {
   const Hello = () => {
@@ -10,7 +15,7 @@ test("should render simple functional component", () => {
   render(<Hello />, document.body, { forgetInstance: true });
 
   expect(document.body.innerHTML).toBe("<div>hello</div>");
-  document.body.innerHTML = "";
+  cleanup()
 });
 
 test("should render function component props - id & class", () => {
@@ -28,7 +33,7 @@ test("should render function component props - id & class", () => {
 
   expect(target.id).toBe("test");
   expect(target).toHaveClass("hi-button");
-  document.body.innerHTML = "";
+  cleanup()
 });
 
 test("should render function component prop - style", () => {
@@ -51,7 +56,7 @@ test("should render function component prop - style", () => {
     border: "solid 1px black",
     backgroundColor: "azure",
   });
-  document.body.innerHTML = "";
+  cleanup()
 });
 
 test("should render function component prop - event", () => {
@@ -77,7 +82,7 @@ test("should render function component prop - event", () => {
   );
 
   expect(handleClick).toHaveBeenCalledTimes(1);
-  document.body.innerHTML = "";
+  cleanup()
 });
 
 test("should do simple reconcile", () => {
@@ -90,6 +95,7 @@ test("should do simple reconcile", () => {
   render(<P />, document.body);
 
   expect(document.body.innerHTML).toBe("<p>hi2</p>");
+  cleanup()
 });
 
 test("should reconcile nested element", () => {
@@ -104,4 +110,5 @@ test("should reconcile nested element", () => {
   render(<Nested />, document.body);
   render(<Simple />, document.body);
   expect(document.body.innerHTML).toBe("<p>hi2</p>");
+  cleanup()
 });
