@@ -22,6 +22,7 @@
     "@babel/plugin-transform-react-jsx": "^7.17.3",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
+    "@testing-library/dom": "^8.13.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/user-event": "^14.1.1",
     "@types/jest": "^27.4.1",
@@ -34,6 +35,7 @@
   "scripts": {
     "ts-types": "tsc --emitDeclarationOnly --outDir build",
     "build": "rimraf build && node ./esbuild.js && yarn ts-types",
-    "test": "jest"
+    "test": "jest",
+    "test:detail": "jest --silent=false --verbose false"
   }
 }
