@@ -48,8 +48,6 @@ test("should render function component prop - style", () => {
 
   const target = document.body.querySelector("#test");
 
-  console.log(target);
-
   expect(target).toHaveStyle({
     border: "solid 1px black",
     backgroundColor: "azure",
@@ -81,4 +79,16 @@ test("should render function component prop - event", () => {
 
   expect(handleClick).toHaveBeenCalledTimes(1);
   document.body.innerHTML = "";
+});
+
+test("should do simple reconcile", () => {
+  const Div = <div>hi</div>;
+
+  render(<Div />, document.body);
+
+  const P = <p>hi2</p>;
+
+  render(<P />, document.body);
+
+  expect(document.body.innerHTML).toBe("<p>hi2</p>")
 });
