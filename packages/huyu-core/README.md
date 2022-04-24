@@ -1371,7 +1371,10 @@ Caveat: you need to specific jsxPragma and jsxPragmaFrag in "@babel/preset-types
 module.exports = {
   presets: [
     ["@babel/preset-env", { targets: { node: "current" } }],
-    ["@babel/preset-typescript", { jsxPragma: "_jsx",  }],
+    [
+      "@babel/preset-typescript",
+      { jsxPragma: "_jsx", jsxPragmaFrag: "_jsxFragment" },
+    ],
   ],
   plugins: [
     [
