@@ -1,6 +1,5 @@
 import { render } from "../src/reconcile";
 import { _jsx, _jsxFragment } from "../src";
-import userEvent from "@testing-library/user-event";
 import { fireEvent } from "@testing-library/dom";
 
 test("should render simple functional component", () => {
@@ -82,13 +81,27 @@ test("should render function component prop - event", () => {
 });
 
 test("should do simple reconcile", () => {
-  const Div = <div>hi</div>;
+  const Div = () => <div>hi</div>;
 
   render(<Div />, document.body);
 
-  const P = <p>hi2</p>;
+  const P = () => <p>hi2</p>;
 
   render(<P />, document.body);
 
-  expect(document.body.innerHTML).toBe("<p>hi2</p>")
+  expect(document.body.innerHTML).toBe("<p>hi2</p>");
+});
+
+test("should reconcile nested element", () => {
+  const Nested = () => (
+    <div>
+      <div>hi</div>
+    </div>
+  );
+
+  const Simple = () => <p>hi2</p>;
+
+  render(<Nested />, document.body);
+  render(<Simple />, document.body);
+  expect(document.body.innerHTML).toBe("<p>hi2</p>");
 });
