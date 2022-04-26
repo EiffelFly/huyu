@@ -19,6 +19,7 @@ type RenderOptions = {
 
 export const initializeInstance = () => {
   rootInstance = null;
+  route = [];
 };
 
 export const render = (
@@ -205,11 +206,11 @@ const reconcilie = (
 
       if (Array.isArray(instance)) {
         for (let i = 0; i < instance.length; i++) {
-          updateDom(instance[i].dom, instance[i].vDom.props);
+          updateDom(instance[i].dom, null, instance[i].vDom.props);
           ownerDom.appendChild(instance[i].dom);
         }
       } else {
-        updateDom(instance.dom, instance.vDom.props);
+        updateDom(instance.dom, null, instance.vDom.props);
         ownerDom.appendChild(instance.dom);
       }
 
@@ -256,7 +257,14 @@ const reconcilie = (
 
       while (index < nextVDom.length) {
         const instance = createInstance(nextVDom[index], null);
-        updateDom(instance.dom, instance.vDom.props);
+
+        // If currentInstance.vDom is vNode[], we should already have currentInstance as Array
+
+        updateDom(
+          instance.dom,
+          (currentInstance.vDom as VNode).props,
+          instance.vDom.props
+        );
         ownerDom.appendChild(instance.dom);
         instances.push(instance);
         index++;
@@ -291,7 +299,11 @@ const reconcilie = (
             ).props.nodeValue;
           }
         } else {
-          updateDom(currentInstance.dom as HTMLElement, nextVDom.props);
+          updateDom(
+            currentInstance.dom as HTMLElement,
+            (currentInstance.vDom as VNode).props,
+            nextVDom.props
+          );
         }
 
         return {
@@ -310,7 +322,11 @@ const reconcilie = (
         }
 
         const instance = createInstance(nextVDom, null);
-        updateDom(instance.dom, instance.vDom.props);
+        updateDom(
+          instance.dom,
+          (currentInstance.vDom as VNode).props,
+          instance.vDom.props
+        );
         ownerDom.replaceChild(instance.dom, currentInstance.dom as HTMLElement);
         return instance;
       }
@@ -365,11 +381,16 @@ const createInstance = (vDom: VDom, ownerDom: DOM) => {
   };
 };
 
-const updateDom = (dom: DOM, props) => {
-  for (const [key, value] of Object.entries(props)) {
+const updateDom = (dom: DOM, preProps, nextProps) => {
+  for (const [key, value] of Object.entries(nextProps)) {
     if (key === "children") {
     } else if (key.startsWith("on")) {
-      updateDomEvent(dom, key, value);
+      console.log(key, value);
+      if (!preProps) {
+        updateDomEvent(dom, key, null, value);
+      } else {
+        updateDomEvent(dom, key, preProps[key], value);
+      }
     } else if (key === "style") {
       updateDomStyle(dom, value);
     } else {
@@ -387,8 +408,12 @@ const updateDomStyle = (dom: DOM, style) => {
   }
 };
 
-const updateDomEvent = (dom: DOM, eventName: string, event) => {
-  dom.addEventListener(eventName.toLowerCase().substring(2), event);
+const updateDomEvent = (dom: DOM, eventName: string, preEvent, nextEvent) => {
+  if (preEvent) {
+    dom.removeEventListener(eventName.toLowerCase().substring(2), preEvent);
+  }
+
+  dom.addEventListener(eventName.toLowerCase().substring(2), nextEvent);
 };
 
 const updateDomAttribute = (dom: DOM, key, value) => {
