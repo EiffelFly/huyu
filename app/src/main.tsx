@@ -1,69 +1,69 @@
 import { render, Fragment } from "@huyu/core";
 
-const Button = () => {
-  return (
-    <button
-      key="button"
-      className="hi"
-      disabled={true}
-      style={{
-        width: "100px",
-        display: "flex",
-        padding: "12px",
-        backgroundColor: "grey",
-        color: "white",
-      }}
-    >
-      <p
-        onClick={() => {
-          console.log("hello");
-        }}
-        aria-hidden={true}
-        style={{ margin: "0 auto", color: "honeydew" }}
-      >
-        Click mes
-      </p>
-    </button>
-  );
-};
+// const Button = () => {
+//   return (
+//     <button
+//       key="button"
+//       className="hi"
+//       disabled={true}
+//       style={{
+//         width: "100px",
+//         display: "flex",
+//         padding: "12px",
+//         backgroundColor: "grey",
+//         color: "white",
+//       }}
+//     >
+//       <p
+//         onClick={() => {
+//           console.log("hello");
+//         }}
+//         aria-hidden={true}
+//         style={{ margin: "0 auto", color: "honeydew" }}
+//       >
+//         Click mes
+//       </p>
+//     </button>
+//   );
+// };
 
-const InputField = () => {
-  return (
-    <input
-      key="input-field-a"
-      type="text"
-      style={{ border: "1px solid black", marginBottom: "20px" }}
-    />
-  );
-};
+// const InputField = () => {
+//   return (
+//     <input
+//       key="input-field-a"
+//       type="text"
+//       style={{ border: "1px solid black", marginBottom: "20px" }}
+//     />
+//   );
+// };
 
-const TextArea = () => {
-  return <textarea rows={5} style={{ border: "1px solid grey" }} />;
-};
+// const TextArea = () => {
+//   return <textarea rows={5} style={{ border: "1px solid grey" }} />;
+// };
 
-const Text = () => {
-  return (
-    <div>
-      <InputField />
-      <Button />
-    </div>
-  );
-};
+// const Text = () => {
+//   return (
+//     <div>
+//       <InputField />
+//       <Button />
+//     </div>
+//   );
+// };
 
-const WeirdArray = () => {
-  return (
-    <>
-      {[
-        <>
-          <h1>hi</h1>
-          <>
-            <p>yes!</p>
-          </>
-        </>,
-      ]}
-    </>
-  );
-};
+// const WeirdArray = () => {
+//   return (
+//     <>
+//       {[
+//         <>
+//           <h1>hi</h1>
+//           <>
+//             <p>yes!</p>
+//           </>
+//         </>,
+//       ]}
+//     </>
+//   );
+// };
 
 // const NestedArray = () => {
 //   return (
@@ -126,25 +126,39 @@ const WeirdArray = () => {
 //   );
 // };
 
-const Foo = () => {
+// const Foo = () => {
+//   return (
+//     <div>
+//       <p>hi</p>
+//       <p>yo</p>
+//       <WeirdArray />
+//     </div>
+//   );
+// };
+
+// render(<Foo />, document.getElementById("root"));
+
+// const Bar = () => {
+//   return (
+//     <div>
+//       <Text />
+//       <WeirdArray />
+//     </div>
+//   );
+// };
+
+const handle = () => {
+  console.log("Hi");
+};
+
+const Test = <div>hi</div>;
+
+const Button = () => {
   return (
-    <div>
-      <p>hi</p>
-      <p>yo</p>
-      <WeirdArray />
-    </div>
+    <button id="test" class="hi-button" onClick={handle}>
+      Click me
+    </button>
   );
 };
 
-render(<Foo />, document.getElementById("root"));
-
-const Bar = () => {
-  return (
-    <div>
-      <Text />
-      <WeirdArray />
-    </div>
-  );
-};
-
-render(<Bar />, document.getElementById("root"));
+render(<Test />, document.body);

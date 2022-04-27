@@ -335,6 +335,8 @@ const reconcilie = (
 };
 
 const createInstance = (vDom: VDom, ownerDom: DOM) => {
+
+  // With this, we will not generate instance with Array-like vDom or dom
   if (Array.isArray(vDom)) {
     return vDom.map((d) => createInstance(d, ownerDom));
   }
