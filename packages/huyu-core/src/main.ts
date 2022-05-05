@@ -1,12 +1,11 @@
 /**
  * JSX related type
  */
+const TEXT_ELEMENT = "text";
 
-import { TEXT_ELEMENT } from "./constant";
-
-type Props<P = {}> = P & { children: Array<Jsx> };
-type type = object | string | Component;
-type Jsx = { type: type; props: Props };
+type JsxProps<P = {}> = P & { children: Array<Jsx> };
+type type = Jsx | string | Component;
+type Jsx = { type: type; props: JsxProps };
 type CompoundJsx = Array<Jsx> | Jsx;
 type Component = (props: any) => CompoundJsx;
 
@@ -16,7 +15,7 @@ type Component = (props: any) => CompoundJsx;
 
 export const createJsx = (
   type: type,
-  props: Partial<Props> & Record<string, any>,
+  props: Partial<JsxProps> & Record<string, any>,
   ...children: Array<Jsx>
 ): Jsx => {
   let kids =
@@ -26,7 +25,7 @@ export const createJsx = (
         )
       : [];
 
-  const jsxProps: Props = { ...props, children: kids };
+  const jsxProps: JsxProps = { ...props, children: kids };
 
   return {
     type,
@@ -46,6 +45,50 @@ export const createTextJsx = (value: string | number | bigint | boolean) => {
  * JSX Fragment is the component that return children
  */
 
-export const jsxFragment = (props: Props): CompoundJsx => {
+export const jsxFragment = (props: JsxProps): CompoundJsx => {
   return props.children;
+};
+
+/**
+ * Create VDom - recursively
+ */
+
+type VNodeProps<P = {}> = P & { children: Array<VNode> };
+type VNode<P = {}> = {
+  type: string;
+  props: VNodeProps<P>;
+};
+type VDom = VNode | VNode[];
+
+export const createVDom = (jsx: CompoundJsx): VDom => {
+  if (Array.isArray(jsx)) {
+    return jsx.map(createVDom).flat();
+  }
+
+  if (typeof jsx.type === "string") {
+    let vNode: VNode;
+    vNode.type = jsx.type;
+
+    if (jsx.props.children.length > 0) {
+      vNode.props = {
+        ...jsx.props,
+        children: jsx.props.children.map(createVDom).flat(),
+      };
+    } else {
+      vNode.props = {
+        ...jsx.props,
+        children: [],
+      };
+    }
+
+    return vNode;
+  }
+
+  if (typeof jsx.type === "function") {
+    return createVDom(jsx.type(jsx.props));
+  }
+
+  if (typeof jsx.type === "object") {
+    return createVDom(jsx.type);
+  }
 };
