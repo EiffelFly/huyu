@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "incremental": true,
     "declaration": true,
+    "strict": true,
     //"declarationDir": "types",
     "sourceMap": true,
     "outDir": "build",

@@ -16,7 +16,7 @@
       "require": "./jsx-runtime.js"
     }
   },
-  "typings": "./build/index.d.ts",
+  "typings": "./build/src/index.d.ts",
   "devDependencies": {
     "@babel/core": "^7.17.9",
     "@babel/plugin-transform-react-jsx": "^7.17.3",

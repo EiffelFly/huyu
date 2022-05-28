@@ -1,94 +1,56 @@
 /**
+ * Some constant
+ */
+const SVG_ELEMENT = "#svg";
+const FRAGMENT_ELEMENT = "#fragment";
+
+/**
  * JSX related type
  */
-const TEXT_ELEMENT = "text";
 
+type JsxPrimitive = number | string;
+type JsxNode = JsxPrimitive | Jsx;
 type JsxProps<P = {}> = P & { children: Array<Jsx> };
-type type = Jsx | string | Component;
-type Jsx = { type: type; props: JsxProps };
-type CompoundJsx = Array<Jsx> | Jsx;
-type Component = (props: any) => CompoundJsx;
+type Tag = Jsx | string | Component;
+type Jsx = { tag: Tag; props: JsxProps };
+type Component = (props: any) => JsxNode;
 
 /**
  * JSX Syntax will call this function to construct a JSX object
  */
 
 export const createJsx = (
-  type: type,
+  tag: Tag,
   props: Partial<JsxProps> & Record<string, any>,
   ...children: Array<Jsx>
 ): Jsx => {
-  let kids =
-    children.length > 0
-      ? children.map((child) =>
-          child instanceof Object ? child : createTextJsx(child)
-        )
-      : [];
-
-  const jsxProps: JsxProps = { ...props, children: kids };
+  const jsxProps: JsxProps = { ...props, children };
 
   return {
-    type,
+    tag,
     props: jsxProps,
   };
 };
 
 /**
- * Replace text in JSX with text node
+ * JSX Fragment is a special jsx that return tag=#fragment
  */
 
-export const createTextJsx = (value: string | number | bigint | boolean) => {
-  return createJsx(TEXT_ELEMENT, { nodeValue: value.toString() });
-};
-
-/**
- * JSX Fragment is the component that return children
- */
-
-export const jsxFragment = (props: JsxProps): CompoundJsx => {
-  return props.children;
+export const jsxFragment = (props: JsxProps): Jsx => {
+  return {
+    tag: FRAGMENT_ELEMENT,
+    props: { children: props.children },
+  };
 };
 
 /**
  * Create VDom - recursively
  */
 
+type DomPrimitive = string;
 type VNodeProps<P = {}> = P & { children: Array<VNode> };
 type VNode<P = {}> = {
-  type: string;
+  tag: string;
   props: VNodeProps<P>;
-};
-type VDom = VNode | VNode[];
-
-export const createVDom = (jsx: CompoundJsx): VDom => {
-  if (Array.isArray(jsx)) {
-    return jsx.map(createVDom).flat();
-  }
-
-  if (typeof jsx.type === "string") {
-    let vNode: VNode;
-    vNode.type = jsx.type;
-
-    if (jsx.props.children.length > 0) {
-      vNode.props = {
-        ...jsx.props,
-        children: jsx.props.children.map(createVDom).flat(),
-      };
-    } else {
-      vNode.props = {
-        ...jsx.props,
-        children: [],
-      };
-    }
-
-    return vNode;
-  }
-
-  if (typeof jsx.type === "function") {
-    return createVDom(jsx.type(jsx.props));
-  }
-
-  if (typeof jsx.type === "object") {
-    return createVDom(jsx.type);
-  }
-};
+} & Record<string, any>;
+type VDom = VNode | DomPrimitive;

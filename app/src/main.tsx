@@ -1,4 +1,4 @@
-import { render, Fragment } from "@huyu/core";
+import { render } from "@huyu/core";
 
 // const Button = () => {
 //   return (
@@ -147,18 +147,26 @@ import { render, Fragment } from "@huyu/core";
 //   );
 // };
 
-const handle = () => {
-  console.log("Hi");
-};
+// const handle = () => {
+//   console.log("Hi");
+// };
 
-const Test = <div>hi</div>;
+// const Test = <div>hi</div>;
 
-const Button = () => {
-  return (
-    <button id="test" class="hi-button" onClick={handle}>
-      Click me
-    </button>
-  );
-};
+// const Button = () => {
+//   return (
+//     <button id="test" class="hi-button" onClick={handle}>
+//       Click me
+//     </button>
+//   );
+// };
 
-render(<Test />, document.body);
+import React from "react";
+
+const Button = <button>hello</button>;
+
+const WrapperButton = <Button />;
+
+const WrapperWrapperButton = <WrapperButton />;
+
+render(<WrapperWrapperButton foo="bar" />, document.body);
